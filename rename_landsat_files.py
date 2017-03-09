@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
-#  (c) Copyright SMBYC - IDEAM 2016
+#  (c) Copyright SMBYC - IDEAM 2017
 #  Authors: Xavier Corredor Llano
 #  Email: xcorredorl at ideam.gov.co
 #
@@ -9,6 +9,8 @@
 # para el renombre de archivos lantsat por lotes y por lo tanto masivamente
 # con base en la estructura definida dentro del proyecto SMBYC.
 #
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import argparse
@@ -17,16 +19,16 @@ from shutil import move
 
 # tipo de renombre: "reflec", "mask", "enmask", "mtl", "norm", "aefectiva", "compuesto"
 # dejar None para correrlo con argumentos
-type_rename = "mtl"
+type_rename = ""
 
 # ruta para renombrar (busca recursivamente dentro de esta ruta)
-dir_files = r"H:\ejemplo\de\ruta\en\windows"
+dir_files = r""
 
 if type_rename is None or type_rename == "" and dir_files is None or dir_files == "":
     # Create parser arguments
     arguments = argparse.ArgumentParser(
         prog="rename_landsat",
-        description="Rename landsat",
+        description="Rename landsat to SMByC format structure",
         epilog="Xavier Corredor Llano <xcorredorl@ideam.gov.co>\n"
                "Sistema de Monitoreo de Bosques y Carbono - SMBYC\n"
                "IDEAM, Colombia",
@@ -34,16 +36,14 @@ if type_rename is None or type_rename == "" and dir_files is None or dir_files =
 
     arguments.add_argument('-t', type=str, help='type for rename', required=True,
                            choices=("reflec", "mask", "enmask", "mtl", "norm", "aefectiva", "compuesto"))
-
     arguments.add_argument('dir_files', type=str, help='dir to get files for rename')
-
     arg = arguments.parse_args()
 
     type_rename = arg.t
     dir_files = arg.dir_files
 
 if not os.path.isdir(dir_files):
-    print "No existe el directorio"
+    print("No existe el directorio")
 
 pattern_search = ('.tif', '.TIF', '.aux', '.AUX', '.rrd', '.RDD', 'img', 'IMG')
 
@@ -100,7 +100,7 @@ for root, dirs, files in os.walk(dir_files):
 
                 try:
                     sensor, landsat_version, path, row, date = parse_landsat_ID(landsat_id)
-                    print "Renombrando la imagen: " + infile
+                    print("Renombrando la imagen: " + infile)
                 except:
                     continue
 
