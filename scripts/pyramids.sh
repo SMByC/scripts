@@ -17,7 +17,7 @@ function clean () {
 }
 
 function compression () {
-    gdal_translate -co COMPRESS=DEFLATE -co PREDICTOR=2 $1 tmp.tif
+    gdal_translate -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 $1 tmp.tif
     rm $1
     mv tmp.tif $1
 }
