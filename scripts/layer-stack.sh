@@ -18,7 +18,7 @@ else
     out_name=$(echo $1 | sed 's/.tif/_allbands.tif/g')
 fi
 
-gdal_merge.py -o $out_name -of GTiff -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -separate $@
+gdal_merge.py -o $out_name -of GTiff -co BIGTIFF=YES -separate $@
 
 echo "Result saved in: $out_name"
 echo "DONE"
