@@ -26,13 +26,13 @@ function pyramids () {
     gdaladdo --config BIGTIFF_OVERVIEW YES $1 2 4 8 16 32 64 128 256 512
 }
 
-echo -e "\nCompute the pyramids for:$@\n"
+echo -e "\nCompute the pyramids:\n"
 
 for FILE in "$@"
 do
-    echo "compression: $FILE"
+    echo "step 1: compression: $FILE"
     compression $FILE
-    echo "compute the pyramids: $FILE"
+    echo "step 2: compute the pyramids: $FILE"
     pyramids $FILE
 done
 
