@@ -23,7 +23,7 @@ type_rename = ""
 # ruta para renombrar (busca recursivamente dentro de esta ruta)
 dir_files = r""
 
-if type_rename is None or type_rename == "" and dir_files is None or dir_files == "":
+if type_rename in ["", None] or dir_files in ["", None]:
     # Create parser arguments
     arguments = argparse.ArgumentParser(
         prog="rename_landsat",
