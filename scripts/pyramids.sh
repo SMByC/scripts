@@ -23,7 +23,7 @@ function compression () {
 }
 
 function pyramids () {
-    gdaladdo --config BIGTIFF_OVERVIEW YES $1 2 4 8 16 32 64 128 256 512
+    gdaladdo -r average --config BIGTIFF_OVERVIEW YES $1 2 4 6 8 12 16 24 32
 }
 
 echo -e "\nCompute the pyramids:\n"
