@@ -5,16 +5,13 @@ site_author: Xavier Corredor Llano, SMBYC-IDEAM
 site_url: https://smbyc.bitbucket.io/scripts
 repo_url: https://bitbucket.org/SMBYC/scripts
 theme: mkdocs
-
 extra_css:
     - css/extra.css
-
 markdown_extensions:
   - smarty
   - admonition
   - toc:
       permalink: true
-
 pages:
 - Home: index.md
 - Installation: installation.md
