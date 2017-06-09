@@ -10,12 +10,12 @@ cd $SCRIPTS_DIR
 if [ ! -d ${SCRIPTS_DIR}/.hg ]; then
     cd ..
     rm -rf ${SCRIPTS_DIR}
-    hg clone https://bitbucket.org/SMBYC/scripts Scripts
+    hg clone https://bitbucket.org/smbyc/scripts Scripts
     cd $SCRIPTS_DIR
 fi
 
 # synchronize changes with repository, update and clean
-hg pull https://bitbucket.org/SMBYC/scripts
+hg pull https://bitbucket.org/smbyc/scripts
 hg update -C
 hg status -un|xargs rm 2> /dev/null
 

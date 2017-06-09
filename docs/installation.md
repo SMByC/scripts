@@ -9,7 +9,7 @@ export SCRIPTS_DIR="/path/to/dir"
 Download from source:
 
 ```bash
-hg clone https://bitbucket.org/SMBYC/scripts $SCRIPTS_DIR
+hg clone https://bitbucket.org/smbyc/scripts $SCRIPTS_DIR
 ```
 
 ## Rename Landsat files
@@ -38,3 +38,5 @@ Create alias in bashrc:
 export SCRIPTS_DIR="/path/to/dir"
 alias pyramids="bash $SCRIPTS_DIR/scripts/pyramids.sh"
 ```
+
+* [x] 

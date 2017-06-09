@@ -11,14 +11,14 @@ Some scripts for the SMByC project with different purpose used in some step in t
 ## Source code
 
 The latest sources can be obtained from official repository:
-[https://bitbucket.org/SMBYC/scripts](https://bitbucket.org/SMBYC/scripts)
+[https://bitbucket.org/smbyc/scripts](https://bitbucket.org/smbyc/scripts)
 
 ## Issue Tracker
 
-Issues, bugs and enhancement: [https://bitbucket.org/SMBYC/scripts/issues](https://bitbucket.org/SMBYC/scripts/issues)
+Issues, ideas and enhancements: [https://bitbucket.org/smbyc/scripts/issues](https://bitbucket.org/smbyc/scripts/issues)
 
 ***
 
 Copyright (C) Xavier Corredor Llano <xcorredorl@ideam.gov.co>  
-Sistema de Monitoreo de Bosques y Carbono - SMBYC and FAO  
+Sistema de Monitoreo de Bosques y Carbono SMByC and FAO  
 General Public License - GPLv3
