@@ -35,14 +35,11 @@ if type_rename in ["", None] or dir_files in ["", None]:
 
     arguments.add_argument('-t', type=str, help='type for rename', required=True,
                            choices=("reflec", "mask", "enmask", "mtl", "norm", "aefectiva", "compuesto"))
-    arguments.add_argument('dir_files', type=str, help='dir to get files for rename')
+    arguments.add_argument('dir_files', type=str, help='directories and/or files', nargs='+')
     arg = arguments.parse_args()
 
     type_rename = arg.t
     dir_files = arg.dir_files
-
-if not os.path.isdir(dir_files):
-    print("No existe el directorio")
 
 pattern_search = ('.tif', '.TIF', '.aux', '.AUX', '.rrd', '.RDD', 'img', 'IMG')
 
@@ -112,64 +109,79 @@ def parse_landsat_ID_newFilename(landsat_id):
 def CalcDate(year, jday):
     return datetime.datetime(year, 1, 1) + datetime.timedelta(jday-1)
 
+all_files = []
+all_dirs = []
+for entry in dir_files:
+    if os.path.isfile(entry):
+        if entry.endswith(pattern_search):
+            all_files.append(entry)
+    elif os.path.isdir(entry):
+        all_dirs.append(entry)
+
+print(all_dirs)
+for dir in all_dirs:
+    for root, dirs, files in os.walk(dir):
+        if len(files) != 0:
+            files = [x for x in files if x.endswith(pattern_search)]
+            if files:
+                for infile in files:
+                    all_files.append(os.path.join(root, infile))
+
 files_renamed = []
 finished_with_errors = 0
-for root, dirs, files in os.walk(dir_files):
-    if len(files) != 0:
-        files = [x for x in files if x.endswith(pattern_search)]
-        if files:
-            for infile in files:
+for path_file in all_files:
+    root, infile = os.path.split(path_file)
 
-                try:
-                    if infile[4] == "_":  # new ESPA filename
-                        landsat_id = infile.split("_")[0:4]
-                        sensor, landsat_version, path, row, date = parse_landsat_ID_newFilename(landsat_id)
-                    else:  # old filename
-                        landsat_id = infile.split("_")[0].split(".")[0]
-                        sensor, landsat_version, path, row, date = parse_landsat_ID_oldFilename(landsat_id)
-                except:
-                    continue
+    try:
+        if infile[4] == "_":  # new ESPA filename
+            landsat_id = infile.split("_")[0:4]
+            sensor, landsat_version, path, row, date = parse_landsat_ID_newFilename(landsat_id)
+        else:  # old filename
+            landsat_id = infile.split("_")[0].split(".")[0]
+            sensor, landsat_version, path, row, date = parse_landsat_ID_oldFilename(landsat_id)
+    except:
+        continue
 
-                ext = '.' + infile.split('.')[-1]
+    ext = '.' + infile.split('.')[-1]
 
-                outfile = "Landsat_{p}_{r}_{d}_{v}{s}".format(
-                    p=path, r=row, d=date.strftime('%y%m%d'), v=landsat_version, s=sensor) + suffix + ext
+    outfile = "Landsat_{p}_{r}_{d}_{v}{s}".format(
+        p=path, r=row, d=date.strftime('%y%m%d'), v=landsat_version, s=sensor) + suffix + ext
 
-                if type_rename == "aefectiva":
-                    outfile = "Landsat_{p}_{r}".format(
-                        p=path, r=row) + suffix + ext
+    if type_rename == "aefectiva":
+        outfile = "Landsat_{p}_{r}".format(
+            p=path, r=row) + suffix + ext
 
-                if type_rename == "compuesto":
-                    outfile = "Landsat_{p}_{r}_{y}".format(
-                        p=path, r=row, y=date.year) + suffix + ext
+    if type_rename == "compuesto":
+        outfile = "Landsat_{p}_{r}_{y}".format(
+            p=path, r=row, y=date.year) + suffix + ext
 
-                if os.path.join(root, outfile) not in files_renamed and not os.path.isfile(os.path.join(root, outfile)):
-                    print("Renombrando la imagen:")
-                    print("  ruta: " + root)
-                    print("    de: " + infile)
-                    print("     a: " + outfile +"\n")
-                else:
-                    print("ERROR renombrando la imagen:")
-                    print("  ruta: " + root)
-                    print("    de: " + infile)
-                    print("     a: " + outfile)
-                    if os.path.join(root, outfile) in files_renamed:
-                        print(" ¡El nombre de archivo de destino ya ha sido renombrado\n"
-                              "  con el mismo nombre y ruta, existen varios archivos que\n"
-                              "  generan el mismo nombre de archivo de salida!\n")
-                    else:
-                        print(" ¡El nombre de archivo de destino ya existe en el sistema\n"
-                              "  no se renombra para no sobreescribir el archivo existente!\n")
-                    finished_with_errors += 1
-                    continue
+    if os.path.join(root, outfile) not in files_renamed and not os.path.isfile(os.path.join(root, outfile)):
+        print("Renombrando la imagen:")
+        print("  ruta: " + root)
+        print("    de: " + infile)
+        print("     a: " + outfile +"\n")
+    else:
+        print("ERROR renombrando la imagen:")
+        print("  ruta: " + root)
+        print("    de: " + infile)
+        print("     a: " + outfile)
+        if os.path.join(root, outfile) in files_renamed:
+            print(" ¡El nombre de archivo de destino ya ha sido renombrado\n"
+                  "  con el mismo nombre y ruta, existen varios archivos que\n"
+                  "  generan el mismo nombre de archivo de salida!\n")
+        else:
+            print(" ¡El nombre de archivo de destino ya existe en el sistema\n"
+                  "  no se renombra para no sobreescribir el archivo existente!\n")
+        finished_with_errors += 1
+        continue
 
-                move(os.path.join(root, infile), os.path.join(root, outfile))
+    move(os.path.join(root, infile), os.path.join(root, outfile))
 
-                files_renamed.append(os.path.join(root, outfile))
+    files_renamed.append(os.path.join(root, outfile))
 
 print("Total de archivos renombrados: {}\n".format(len(files_renamed)))
 
 if finished_with_errors > 0:
     print("Atención, finalizó con {} errores, por favor revise\n"
-          "los mensajes anteriores del renombre de cada archivo.\n".format(finished_with_errors))
+          "los mensajes anteriores del proceso por archivo.\n".format(finished_with_errors))
 
