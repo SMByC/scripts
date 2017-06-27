@@ -70,7 +70,8 @@ if type_rename == "compuesto":
     suffix = "_Compuesto"
 
 
-def parse_landsat_ID(landsat_id):
+def parse_landsat_ID_oldFilename(landsat_id):
+    # LC80070592016320LGN00_band1.tif
     landsat_id = landsat_id.upper()
     if landsat_id[1] == "E":
         sensor = "ETM"
@@ -86,20 +87,46 @@ def parse_landsat_ID(landsat_id):
     date = CalcDate(year, jday)
     return sensor, landsat_version, path, row, date
 
+
+def parse_landsat_ID_newFilename(landsat_id):
+    # LC08_L1TP_007059_20161115_20170318_01_T2_b1.tif
+    # ['LC08', 'L1TP', '007059', '20161115']
+
+    landsat_id = [i.upper() for i in landsat_id]
+    if landsat_id[0][1] == "E":
+        sensor = "ETM"
+    if landsat_id[0][1] in ["O", "C"]:
+        sensor = "OLI"
+    if landsat_id[0][1] == "T":
+        sensor = "TM"
+    landsat_version = int(landsat_id[0][-1])
+    path = int(landsat_id[2][0:3])
+    row = int(landsat_id[2][3:6])
+    year = int(landsat_id[3][0:4])
+    month = int(landsat_id[3][4:6])
+    day = int(landsat_id[3][6:8])
+    date = datetime.date(year, month, day)
+    return sensor, landsat_version, path, row, date
+
+
 def CalcDate(year, jday):
     return datetime.datetime(year, 1, 1) + datetime.timedelta(jday-1)
 
+files_renamed = []
+finished_with_errors = 0
 for root, dirs, files in os.walk(dir_files):
     if len(files) != 0:
         files = [x for x in files if x.endswith(pattern_search)]
         if files:
             for infile in files:
 
-                landsat_id = infile.split("_")[0].split(".")[0]
-
                 try:
-                    sensor, landsat_version, path, row, date = parse_landsat_ID(landsat_id)
-                    print("Renombrando la imagen: " + infile)
+                    if infile[4] == "_":  # new ESPA filename
+                        landsat_id = infile.split("_")[0:4]
+                        sensor, landsat_version, path, row, date = parse_landsat_ID_newFilename(landsat_id)
+                    else:  # old filename
+                        landsat_id = infile.split("_")[0].split(".")[0]
+                        sensor, landsat_version, path, row, date = parse_landsat_ID_oldFilename(landsat_id)
                 except:
                     continue
 
@@ -116,5 +143,33 @@ for root, dirs, files in os.walk(dir_files):
                     outfile = "Landsat_{p}_{r}_{y}".format(
                         p=path, r=row, y=date.year) + suffix + ext
 
+                if os.path.join(root, outfile) not in files_renamed and not os.path.isfile(os.path.join(root, outfile)):
+                    print("Renombrando la imagen:")
+                    print("  ruta: " + root)
+                    print("    de: " + infile)
+                    print("     a: " + outfile +"\n")
+                else:
+                    print("ERROR renombrando la imagen:")
+                    print("  ruta: " + root)
+                    print("    de: " + infile)
+                    print("     a: " + outfile)
+                    if os.path.join(root, outfile) in files_renamed:
+                        print(" ¡El nombre de archivo de destino ya ha sido renombrado\n"
+                              "  con el mismo nombre y ruta, existen varios archivos que\n"
+                              "  generan el mismo nombre de archivo de salida!\n")
+                    else:
+                        print(" ¡El nombre de archivo de destino ya existe en el sistema\n"
+                              "  no se renombra para no sobreescribir el archivo existente!\n")
+                    finished_with_errors += 1
+                    continue
+
                 move(os.path.join(root, infile), os.path.join(root, outfile))
+
+                files_renamed.append(os.path.join(root, outfile))
+
+print("Total de archivos renombrados: {}\n".format(len(files_renamed)))
+
+if finished_with_errors > 0:
+    print("Atención, finalizó con {} errores, por favor revise\n"
+          "los mensajes anteriores del renombre de cada archivo.\n".format(finished_with_errors))
 
