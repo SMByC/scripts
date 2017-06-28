@@ -4,9 +4,11 @@ Some scripts for the SMByC project with different purpose used in some step in t
 
 ## Scripts:
 
-- [Rename landsat files](scripts/#rename-landsat-files)
-- [Layer stack](scripts/#layer-stack)
-- [Pyramids](scripts/#pyramids)
+Here there are some scripts with different purpose oriented to process raster images. This scripts mainly tested with Landsat images and Linux.
+
+- [Rename landsat files](rename_landsat.md)
+- [Layer stack](layer_stack.md)
+- [Pyramids](pyramids.md)
 
 ## Source code
 

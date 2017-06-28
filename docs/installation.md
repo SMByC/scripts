@@ -38,5 +38,3 @@ Create alias in bashrc:
 export SCRIPTS_DIR="/path/to/dir"
 alias pyramids="bash $SCRIPTS_DIR/scripts/pyramids.sh"
 ```
-
-* [x] 
