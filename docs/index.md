@@ -6,6 +6,7 @@ Some scripts for the SMByC project with different purpose used in some step in t
 
 Here there are some scripts with different purpose oriented to process raster images. This scripts mainly tested with Landsat images and Linux.
 
+- [Extract landsat files](extract_landsat_files.md)
 - [Rename landsat files](rename_landsat.md)
 - [Layer stack](layer_stack.md)
 - [Pyramids](pyramids.md)

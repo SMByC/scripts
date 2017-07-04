@@ -12,6 +12,15 @@ Download from source:
 hg clone https://bitbucket.org/smbyc/scripts $SCRIPTS_DIR
 ```
 
+## Extract the landsat files
+
+Create alias in bashrc:
+
+```bash
+export SCRIPTS_DIR="/path/to/dir"
+alias extract-landsat-files="bash $SCRIPTS_DIR/scripts/extract_landsat_files.sh"
+```
+
 ## Rename Landsat files
 
 Create alias in bashrc:
