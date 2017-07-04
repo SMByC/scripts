@@ -36,7 +36,7 @@ Create alias in bashrc:
 
 ```bash
 export SCRIPTS_DIR="/path/to/dir"
-alias layer-stack="bash $SCRIPTS_DIR/scripts/layer-stack.sh"
+alias layer-stack="bash $SCRIPTS_DIR/scripts/layer_stack.sh"
 ```
 
 ## Pyramids
