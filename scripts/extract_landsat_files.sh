@@ -4,11 +4,41 @@
 #  Copyright (C) 2017 Xavier Corredor Llano, SMBYC
 #  Email: xcorredorl at ideam.gov.co
 #
-# extract all input landsat compressed (tar.gz) files
+# Extract all input landsat compressed (tar.gz) files
 #
 
 # break with any error
 set -e
+
+##### help
+function help(){ cat << END
+usage: extract-landsat-files [-h] FILES
+
+Extract all input landsat compressed (tar.gz) files
+
+arguments:
+    FILES  files to process
+
+For more information visit:
+https://smbyc.bitbucket.io/scripts/extract_landsat_files
+END
+}
+
+if [ "$#" -ne 1 ]; then
+    echo -e "Error: required arguments, see how to usage:\n"
+    help
+    exit 1
+fi
+
+for arg in "$@"
+do
+    if [[ $arg == "-h" ]]
+    then
+        help
+        exit 0
+    fi
+done
+#####
 
 function extraction () {
     if [ -d "$2" ]; then

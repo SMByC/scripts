@@ -10,6 +10,36 @@
 # break with any error
 set -e
 
+##### help
+function help(){ cat << END
+usage: layer-stack [-h] FILES
+
+Make the layerstack for all images in the input order
+
+arguments:
+    FILES  files to process in order to stack
+
+For more information visit:
+https://smbyc.bitbucket.io/scripts/layer_stack/
+END
+}
+
+if [ "$#" -ne 1 ]; then
+    echo -e "Error: required arguments, see how to usage:\n"
+    help
+    exit 1
+fi
+
+for arg in "$@"
+do
+    if [[ $arg == "-h" ]]
+    then
+        help
+        exit 0
+    fi
+done
+#####
+
 echo -e "\nMaking the layerstack for (and in the following order):\n$@\n"
 
 if [[ $1 == *"_band"* ]]; then

@@ -10,6 +10,36 @@
 # break with any error
 set -e
 
+##### help
+function help(){ cat << END
+usage: pyramids [-h] FILES
+
+Compute the pyramids inside the tif image (with compression)
+
+arguments:
+    FILES  files to process
+
+For more information visit:
+https://smbyc.bitbucket.io/scripts/pyramids
+END
+}
+
+if [ "$#" -ne 1 ]; then
+    echo -e "Error: required arguments, see how to usage:\n"
+    help
+    exit 1
+fi
+
+for arg in "$@"
+do
+    if [[ $arg == "-h" ]]
+    then
+        help
+        exit 0
+    fi
+done
+#####
+
 function clean () {
     gdal_translate $1 tmp.tif
     rm $1
