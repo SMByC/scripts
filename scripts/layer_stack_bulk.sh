@@ -22,7 +22,7 @@ https://smbyc.bitbucket.io/scripts/layer_stack/#bulk-for-landsat
 END
 }
 
-if [ "$#" -ne 1 ]; then
+if (( $# < 1 )); then
     echo -e "Error: required arguments, see how to usage:\n"
     help
     exit 1
