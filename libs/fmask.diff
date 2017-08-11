@@ -1,0 +1,191 @@
+diff -Naur fmask/fillminima.py fmask/fillminima.py
+--- fmask/fillminima.py	2017-05-04 17:58:15.000000000 -0500
++++ fmask/fillminima.py	2017-03-15 19:17:52.000000000 -0500
+@@ -28,13 +28,20 @@
+ # along with this program; if not, write to the Free Software
+ # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ 
+-import os
+ import numpy
++import sys
+ from scipy.ndimage import grey_erosion, grey_dilation, minimum_filter
+ 
+-# Fail slightly less drastically when running from ReadTheDocs
+-if os.getenv('READTHEDOCS', default='False') != 'True':
+-    from . import _fillminima
++# load _fillminima
++is_64bits = sys.maxsize > 2**32
++if is_64bits:
++    if sys.platform == "darwin":
++        from CloudMasking.libs.fmask.ios64 import _fillminima
++    else:
++        from . import _fillminima
++else:
++    from CloudMasking.libs.fmask.lib32 import _fillminima
++
+ 
+ def fillMinima(img, nullval, boundaryval):
+     """
+@@ -70,7 +77,7 @@
+     boundaryCols = boundaryCols.astype(numpy.int64)
+ 
+     _fillminima.fillMinima(img, img2, hMin, hMax, nullmask, boundaryval,
+-                        boundaryRows, boundaryCols)    
++                        boundaryRows, boundaryCols)
+     
+     img2[nullmask] = nullval
+     
+diff -Naur fmask/fmask.py fmask/fmask.py
+--- fmask/fmask.py	2017-05-04 17:58:15.000000000 -0500
++++ fmask/fmask.py	2017-01-24 00:34:49.000000000 -0500
+@@ -50,6 +50,7 @@
+ import subprocess
+ import tempfile
+ 
++import multiprocessing
+ import numpy
+ numpy.seterr(all='raise')
+ from osgeo import gdal
+@@ -582,6 +583,8 @@
+     outfiles = applier.FilenameAssociations()
+     otherargs = applier.OtherInputs()
+     controls = applier.ApplierControls()
++    #controls.setNumThreads(multiprocessing.cpu_count())
++    #controls.setJobManagerType("multiprocessing")
+     
+     infiles.pass1 = pass1file
+     infiles.pass2 = pass2file
+@@ -744,6 +747,8 @@
+     outfiles = applier.FilenameAssociations()
+     otherargs = applier.OtherInputs()
+     controls = applier.ApplierControls()
++    #controls.setNumThreads(multiprocessing.cpu_count())
++    #controls.setJobManagerType("multiprocessing")
+     
+     # if we have thermal, run against that 
+     # otherwise we are just 
+@@ -1192,6 +1197,8 @@
+     outfiles = applier.FilenameAssociations()
+     otherargs = applier.OtherInputs()
+     controls = applier.ApplierControls()
++    #controls.setNumThreads(multiprocessing.cpu_count())
++    #controls.setJobManagerType("multiprocessing")
+     
+     infiles.cloud = interimCloudmask
+     infiles.shadow = interimShadowmask
+@@ -1202,6 +1209,7 @@
+     controls.setStatsIgnore(OUTCODE_NULL)
+     controls.setWindowXsize(RIOS_WINDOW_SIZE)
+     controls.setWindowYsize(RIOS_WINDOW_SIZE)
++    controls.setCalcStats(False)
+     
+     if fmaskConfig.cloudBufferSize > 0:
+         otherargs.bufferkernel = makeBufferKernel(fmaskConfig.cloudBufferSize)
+diff -Naur fmask/landsatTOA.py fmask/landsatTOA.py
+--- fmask/landsatTOA.py	2017-05-04 17:58:15.000000000 -0500
++++ fmask/landsatTOA.py	2017-01-24 00:34:49.000000000 -0500
+@@ -22,6 +22,8 @@
+ from __future__ import print_function, division
+ 
+ import sys
++
++import multiprocessing
+ import numpy
+ from osgeo import gdal
+ from rios import applier, cuiprogress, fileinfo
+@@ -166,6 +168,9 @@
+     otherinputs.inNull = imginfo.nodataval[0]
+ 
+     controls = applier.ApplierControls()
++    #controls.setNumThreads(multiprocessing.cpu_count())
++    #controls.setJobManagerType("multiprocessing")
++
+     controls.progress = cuiprogress.GDALProgressBar()
+     controls.setStatsIgnore(otherinputs.outNull)
+     controls.setCalcStats(False)
+diff -Naur fmask/landsatangles.py fmask/landsatangles.py
+--- fmask/landsatangles.py	2017-05-04 17:58:15.000000000 -0500
++++ fmask/landsatangles.py	2017-01-24 00:34:49.000000000 -0500
+@@ -62,6 +62,7 @@
+ 
+ import datetime
+ 
++import multiprocessing
+ import numpy
+ from osgeo import osr
+ 
+@@ -318,6 +319,8 @@
+     outfiles = applier.FilenameAssociations()
+     otherargs = applier.OtherInputs()
+     controls = applier.ApplierControls()
++    #controls.setNumThreads(multiprocessing.cpu_count())
++    #controls.setJobManagerType("multiprocessing")
+ 
+     infiles.img = templateimg
+     outfiles.angles = outfile
+@@ -334,6 +337,7 @@
+     otherargs.satAzimuth = satAzimuth
+     otherargs.radianScale = 100        # Store pixel values as (radians * radianScale)
+     controls.setStatsIgnore(500)
++    controls.setCalcStats(False)
+ 
+     applier.apply(makeAngles, infiles, outfiles, otherargs, controls=controls)
+ 
+diff -Naur fmask/saturationcheck.py fmask/saturationcheck.py
+--- fmask/saturationcheck.py	2017-05-04 17:58:15.000000000 -0500
++++ fmask/saturationcheck.py	2017-01-24 00:34:49.000000000 -0500
+@@ -22,6 +22,7 @@
+ # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ from __future__ import print_function, division
+ 
++import multiprocessing
+ import numpy
+ from rios import applier, cuiprogress
+ from . import config
+@@ -57,6 +58,10 @@
+     otherargs.radianceBands = fmaskConfig.bands
+     
+     controls = applier.ApplierControls()
++    #controls.setNumThreads(multiprocessing.cpu_count())
++    #controls.setJobManagerType("multiprocessing")
++    controls.setCalcStats(False)
++
+     controls.progress = cuiprogress.GDALProgressBar()
+     
+     applier.apply(riosSaturationMask, inputs, outputs, 
+diff -Naur fmask/valueindexes.py fmask/valueindexes.py
+--- fmask/valueindexes.py	2017-05-04 17:58:15.000000000 -0500
++++ fmask/valueindexes.py	2017-03-15 19:16:58.000000000 -0500
+@@ -16,12 +16,19 @@
+ # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ from __future__ import print_function, division
+ 
+-import os
++import sys
+ import numpy
+ 
+-# Fail slightly less drastically when running from ReadTheDocs
+-if os.getenv('READTHEDOCS', default='False') != 'True':
+-    from . import _valueindexes
++# load _valueindexes
++is_64bits = sys.maxsize > 2**32
++if is_64bits:
++    if sys.platform == "darwin":
++        from CloudMasking.libs.fmask.ios64 import _valueindexes
++    else:
++        from . import _valueindexes
++else:
++    from CloudMasking.libs.fmask.lib32 import _valueindexes
++
+ 
+ class ValueIndexesError(Exception):
+     pass
+@@ -140,7 +147,7 @@
+             # a new element of that value. 
+             currentIndex = self.start.copy().astype(numpy.uint32)
+ 
+-            _valueindexes.valndxFunc(a, self.indexes, valrange[0], valrange[1], 
++            _valueindexes.valndxFunc(a, self.indexes, valrange[0], valrange[1],
+                         self.valLU, currentIndex)
+ 
+     def getIndexes(self, val):
