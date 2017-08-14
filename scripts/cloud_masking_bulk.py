@@ -43,6 +43,8 @@ def script():
     parser.add_argument('--swir2_water_test', type=float, default=0.03, required=False)
     parser.add_argument('--nir_snow_thresh', type=float, default=0.11, required=False)
     parser.add_argument('--green_snow_thresh', type=float, default=0.1, required=False)
+    parser.add_argument('--blue_band_l457', type=int, default=-1, required=False)
+    parser.add_argument('--blue_band_l8', type=int, default=-1, required=False)
 
     parser.add_argument('inputs', type=str, help='directories or MTL files to process', nargs='*')
 
@@ -66,19 +68,46 @@ def script():
 
     for mtl_file in mtl_files:
         print("PROCESSING: " + os.path.basename(mtl_file).split("_MTL.txt")[0])
-        do_fmask(mtl_file, filters_enabled, args.cloud_prob_thresh, args.cloud_buffer_size,
-                 args.shadow_buffer_size, args.cirrus_prob_ratio, args.nir_fill_thresh, args.swir2_thresh,
-                 args.whiteness_thresh, args.swir2_water_test, args.nir_snow_thresh, args.green_snow_thresh)
+        cloud_masking_files = []
+
+        tmp_dir = os.path.join(os.path.dirname(mtl_file), "tmp_dir")
+        if not os.path.isdir(tmp_dir):
+            os.makedirs(tmp_dir)
+
+        cloud_masking_files.append(
+            do_fmask(mtl_file, filters_enabled, tmp_dir, args.cloud_prob_thresh, args.cloud_buffer_size,
+                     args.shadow_buffer_size, args.cirrus_prob_ratio, args.nir_fill_thresh, args.swir2_thresh,
+                     args.whiteness_thresh, args.swir2_water_test, args.nir_snow_thresh, args.green_snow_thresh))
+
+        cloud_masking_files.append(do_blue_band(mtl_file, args.blue_band_l457, args.blue_band_l8, tmp_dir))
+
+        cloud_masking_files = [i for i in cloud_masking_files if i is not None]
+
+        cloud_mask_file = mtl_file.split("_MTL.txt")[0] + "_mask.tif"
 
 
-def do_fmask(mtl_file, filters_enabled, min_cloud_size=0, cloud_prob_thresh=0.225, cloud_buffer_size=4,
+        if len(cloud_masking_files) == 1:
+            gdal_calc.Calc(calc="0*(A==1)+3*(A!=1)", outfile=cloud_mask_file,
+                           A=cloud_masking_files[0], NoDataValue=0)
+
+        if len(cloud_masking_files) == 2:
+            gdal_calc.Calc(calc="0*logical_and(A==1,B==1)+3*logical_or(A!=1,B!=1)",
+                           outfile=cloud_mask_file, NoDataValue=0,
+                           A=cloud_masking_files[0], B=cloud_masking_files[1])
+
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+
+        ### ending fmask process
+        print("DONE\n")
+
+
+def do_fmask(mtl_file, filters_enabled, tmp_dir, min_cloud_size=0, cloud_prob_thresh=0.225, cloud_buffer_size=4,
              shadow_buffer_size=6, cirrus_prob_ratio=0.04, nir_fill_thresh=0.02, swir2_thresh=0.03,
              whiteness_thresh=0.7, swir2_water_test=0.03, nir_snow_thresh=0.11, green_snow_thresh=0.1):
 
+    print("Fmask:")
+
     input_dir = os.path.dirname(mtl_file)
-    tmp_dir = os.path.join(input_dir, "tmp_dir")
-    if not os.path.isdir(tmp_dir):
-        os.makedirs(tmp_dir)
 
     # parser
     mtl_file_parse = mtl2dict(mtl_file)
@@ -205,7 +234,7 @@ def do_fmask(mtl_file, filters_enabled, min_cloud_size=0, cloud_prob_thresh=0.22
     # fmask_usgsLandsatStacked.py
 
     # tmp file for cloud
-    cloud_fmask_file = mtl_file.split("_MTL.txt")[0] + "_fmask.tif"
+    cloud_fmask_file = os.path.join(tmp_dir, "fmask.tif")
 
     # 1040nm thermal band should always be the first (or only) band in a
     # stack of Landsat thermal bands
@@ -273,14 +302,53 @@ def do_fmask(mtl_file, filters_enabled, min_cloud_size=0, cloud_prob_thresh=0.22
     # process Fmask
     fmask.doFmask(fmaskFilenames, fmaskConfig)
 
-    shutil.rmtree(tmp_dir, ignore_errors=True)
-
-    gdal_calc.Calc(calc="0*(A==1)+3*(A!=1)", outfile=cloud_fmask_file.replace(".tif", "_bin.tif"),
-                   A=cloud_fmask_file, NoDataValue=0)
-
-    ### ending fmask process
-    print("DONE\n")
+    return cloud_fmask_file
     
+
+def do_blue_band(mtl_file, blue_band_l457, blue_band_l8, tmp_dir):
+
+    input_dir = os.path.dirname(mtl_file)
+
+    # parser
+    mtl_file_parse = mtl2dict(mtl_file)
+
+    # get the landsat version
+    landsat_version = int(mtl_file_parse['SPACECRAFT_ID'][-1])
+
+    # tmp file for cloud
+    cloud_bb_file = os.path.join(tmp_dir, "bb_mask.tif")
+
+    #if args.blue_band_l457 != 1 and args.blue_band_l8 != 1
+
+    ########################################
+    # select the Blue Band
+    if landsat_version in [4, 5, 7]:
+        # get the reflective file names bands
+        blue_band_file = os.path.join(input_dir, mtl_file_parse['FILE_NAME_BAND_1'])
+        bb_threshold = blue_band_l457
+    if landsat_version in [8]:
+        # get the reflective file names bands
+        blue_band_file = os.path.join(input_dir, mtl_file_parse['FILE_NAME_BAND_2'])
+        bb_threshold = blue_band_l8
+
+    if bb_threshold == -1:
+        return
+
+    print("Blue band: ", end="")
+
+    # fix file name
+    blue_band_file = get_prefer_name(blue_band_file)
+
+    ########################################
+    # do blue band filter
+    gdal_calc.Calc(calc="1*(A<{threshold})+6*(A>={threshold})".format(threshold=bb_threshold),
+                   A=blue_band_file, outfile=cloud_bb_file, type="Byte")
+
+    # save final result of masking
+    return cloud_bb_file
+
+    print("done")
+
 
 def mtl2dict(filename, to_float=True):
     """ Reads in filename and returns a dict with MTL metadata.
