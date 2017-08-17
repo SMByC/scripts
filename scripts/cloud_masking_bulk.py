@@ -75,7 +75,7 @@ def script():
             os.makedirs(tmp_dir)
 
         cloud_masking_files.append(
-            do_fmask(mtl_file, filters_enabled, tmp_dir, args.cloud_prob_thresh, args.cloud_buffer_size,
+            do_fmask(mtl_file, filters_enabled, tmp_dir, 0, args.cloud_prob_thresh, args.cloud_buffer_size,
                      args.shadow_buffer_size, args.cirrus_prob_ratio, args.nir_fill_thresh, args.swir2_thresh,
                      args.whiteness_thresh, args.swir2_water_test, args.nir_snow_thresh, args.green_snow_thresh))
 
