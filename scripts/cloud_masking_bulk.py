@@ -88,11 +88,11 @@ def script():
 
         if len(cloud_masking_files) == 1:
             gdal_calc.Calc(calc="0*(A==1)+3*(A!=1)", outfile=cloud_mask_file,
-                           A=cloud_masking_files[0], NoDataValue=0)
+                           A=cloud_masking_files[0])
 
         if len(cloud_masking_files) == 2:
             gdal_calc.Calc(calc="0*logical_and(A==1,B==1)+3*logical_or(A!=1,B!=1)",
-                           outfile=cloud_mask_file, NoDataValue=0,
+                           outfile=cloud_mask_file,
                            A=cloud_masking_files[0], B=cloud_masking_files[1])
 
         shutil.rmtree(tmp_dir, ignore_errors=True)
