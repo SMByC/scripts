@@ -15,6 +15,7 @@ from __future__ import unicode_literals
 import os
 import argparse
 import shutil
+import fileinput
 
 
 def script():
@@ -76,6 +77,19 @@ def script():
                     if "_MTL.txt" in file:
                         new_filename = file.replace(from_filename, to_filename)
                         shutil.move(os.path.join(root, file), os.path.join(root, new_filename))
+
+                        # rename filename for bands and mtl inside mtl
+                        with fileinput.FileInput(os.path.join(root, new_filename), inplace=True) as file:
+                            for line in file:
+                                if "FILE_NAME_BAND_" in line:
+                                    band = line.split("FILE_NAME_BAND_")[1][0]
+                                    try:
+                                        old_filename = [f for f in files if "_sr_band"+band in f][0]
+                                        line = "    FILE_NAME_BAND_{} = \"{}\"\n".format(band, old_filename.replace(from_filename, to_filename))
+                                    except: pass
+                                if "METADATA_FILE_NAME" in line:
+                                    line = "    METADATA_FILE_NAME = \"{}\"\n".format(new_filename)
+                                print(line, end='')
                         continue
                     files_to_delete.append(os.path.join(root, file))
 
