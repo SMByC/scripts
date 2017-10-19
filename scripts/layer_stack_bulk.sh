@@ -9,13 +9,12 @@
 
 ##### help
 function help(){ cat << END
-usage: layer-stack-bulk [-h] [-b=BANDS] FILES
+usage: layer-stack-bulk [-h] [-b=BANDS]
 
-Make the default (Reflec SR) layer stack for all landsat folders in current directory
+Make the default (Reflec SR) layer stack for all landsat folders (L*) in current directory
 
 arguments:
     BANDS  bands to make layer stack, by default 1-7 (e.g. -b=3,4,5)
-    FILES  files to process
 
 For more information visit:
 https://smbyc.bitbucket.io/scripts/layer_stack/#bulk-for-landsat

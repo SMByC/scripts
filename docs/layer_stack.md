@@ -20,7 +20,7 @@ The output is a Geotiff image named *_allbands.tif
 
 ### Bulk for Landsat
 
-Make the default (Reflec SR) layer stack for all landsat folders in current directory
+Make the default (Reflec SR) layer stack for all landsat folders (L*) in current directory
 
 #### How to use
 
