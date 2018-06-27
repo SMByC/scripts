@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# run script in Linux environment
+SOURCE=$(dirname $(dirname "${BASH_SOURCE[0]}"))
+exec python3 "$SOURCE/scripts/check_imgs.py" "$@"
