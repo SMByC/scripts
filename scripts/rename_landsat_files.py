@@ -26,7 +26,7 @@ dir_files = r""
 if type_rename in ["", None] or dir_files in ["", None]:
     # Create parser arguments
     arguments = argparse.ArgumentParser(
-        prog="rename_landsat",
+        prog="rename-landsat-files",
         description="Rename landsat to SMByC format structure",
         epilog="Xavier Corredor Llano <xcorredorl@ideam.gov.co>\n"
                "Sistema de Monitoreo de Bosques y Carbono - SMBYC\n"

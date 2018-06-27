@@ -405,5 +405,6 @@ def get_prefer_name(file_path):
     # return original
     return file_path
 
+
 if __name__ == '__main__':
     script()
