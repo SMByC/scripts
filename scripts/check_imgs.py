@@ -15,7 +15,7 @@ def script():
 
     parser.add_argument('inputs', type=str, help='directories or files to check', nargs='*', default=".")
     args = parser.parse_args()
-    print(args.inputs)
+
     # search all Image files in inputs recursively if the files are in directories
     img_files = []
     for _input in args.inputs:
