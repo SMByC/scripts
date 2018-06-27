@@ -55,7 +55,7 @@ def script():
 
         # projection
         proj = osr.SpatialReference(wkt=gdal_file.GetProjection())
-        epsg = proj.GetAttrValue('AUTHORITY', 1)
+        epsg = int(proj.GetAttrValue('AUTHORITY', 1))
 
         if epsg != 32618:
             errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32618)
