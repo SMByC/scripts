@@ -1,3 +1,4 @@
+import datetime
 import os
 import argparse
 from osgeo import gdal
@@ -66,6 +67,35 @@ def script():
         if (pixel_size_x, pixel_size_y) != (30.0, 30.0):
             errors += "\t- Imagen con tamaño de pixel {}x{}, esperado 30.0x30.0\n".format(pixel_size_x, pixel_size_y)
 
+        # check SMByC finename
+        try:
+            filename = os.path.basename(img_file).split(".")[0]
+            path = int(filename.split("_")[1])
+            row = int(filename.split("_")[2])
+            date = datetime.datetime.strptime(filename.split("_")[3], "%y%m%d").date()
+            jday = date.timetuple().tm_yday
+            landsat_version = int(filename.split("_")[4][0])
+            sensor = filename.split("_")[4][1::]
+            if not filename.startswith("Landsat_"): raise Exception("No inicia con'Landsat_'")
+            if sensor not in ["ETM", "OLI", "TM"]: raise Exception("Nombre de sensor '{}' invalido".format(sensor))
+            if landsat_version not in [5, 7, 8]: raise Exception("Version de landsat '{}' invalido".format(landsat_version))
+            if os.path.basename(os.path.dirname(img_file)) != "{}_{}".format(path, row):
+                raise Exception("Path/row de la imagen '{}' no corresponde a la carpeta superior '{}'"
+                                .format("{}_{}".format(path, row), os.path.basename(os.path.dirname(img_file))))
+
+            parent_dir = os.path.basename(os.path.dirname(os.path.dirname(img_file)))
+            if parent_dir == "3.2.1.Reflectancia_SR":
+                ptype = filename.split("_")[5:7]
+                if ptype != ["Reflec", "SR"]: raise Exception("Archivo dentro de la carpeta '{}' debe finalizar con 'Reflec_SR'".format(parent_dir))
+            if parent_dir == "3.2.2.Reflectancia_SR_Enmascarada":
+                ptype = filename.split("_")[5:8]
+                if ptype != ["Reflec", "SR", "Enmask"]: raise Exception("Archivo dentro de la carpeta '{}' debe finalizar con 'Reflec_SR_Enmask'".format(parent_dir))
+            if parent_dir == "3.2.3.Reflectancia_Normalizada":
+                ptype = filename.split("_")[5:6]
+                if ptype != ["Norm"]: raise Exception("Archivo dentro de la carpeta '{}' debe finalizar con 'Norm'".format(parent_dir))
+
+        except Exception as e:
+            errors += "\t- Error en el nombre de la imagen: {}\n".format(e)
 
         if errors != "":
             print("\nERRORES PARA: " + img_file + ":")
