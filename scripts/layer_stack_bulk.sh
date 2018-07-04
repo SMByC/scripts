@@ -56,7 +56,7 @@ for dir in `ls -d L*/`
 do
     echo "Processing: $dir"
     cd $dir
-    name=`ls *band*`
+    name=`ls *sr_band*`
     out_name=`echo $name | cut -d's' -f1`
 
     gdal_merge.py -o ../${out_name}Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot UInt16 -separate $(eval ls ${out_name}sr_band{$BANDS}.tif)
