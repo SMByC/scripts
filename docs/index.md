@@ -10,6 +10,7 @@ Here there are some scripts with different purpose oriented to process raster im
 - [Rename landsat files](rename_landsat.md)
 - [Layer stack](layer_stack.md)
 - [Pyramids](pyramids.md)
+- [Check images](check_imgs.md)
 
 ## Source code
 
