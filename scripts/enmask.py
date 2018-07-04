@@ -59,8 +59,14 @@ def script():
             if os.path.isfile(enmask_file):
                 os.remove(enmask_file)
 
-        gdal_calc.Calc(calc="A*(B==0)", A=os.path.abspath(img_file), B=mask_file,
+        # unset the nodata
+        tmp_file = enmask_file.replace(".tif", "_TMP.tif")
+        gdal.Translate(tmp_file, os.path.abspath(img_file), noData="none")
+
+        gdal_calc.Calc(calc="A*(B==0)", A=tmp_file, B=mask_file,
                        outfile=enmask_file, allBands='A', overwrite=True)
+
+        os.remove(tmp_file)
 
         print("DONE")
 
