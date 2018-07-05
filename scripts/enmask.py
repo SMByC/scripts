@@ -1,4 +1,5 @@
 import os, sys
+from subprocess import call
 import argparse
 from osgeo import gdal
 gdal.UseExceptions()
@@ -54,7 +55,7 @@ def script():
         if not os.path.isfile(mask_file):
             report += "ERROR, mask file not exist:\n\t{}\n".format(mask_file)
             imgs_with_problems += 1
-            continue
+            #continue
 
         enmask_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(img_file))))), "3.2.Reflectancia_SR", "3.2.2.Reflectancia_SR_Enmascarada",
                                    path_row, filename.replace("_Reflec", "_SR_Enmask.tif"))
@@ -66,7 +67,26 @@ def script():
 
         # unset the nodata
         tmp_file = enmask_file.replace(".tif", "_TMP.tif")
-        gdal.Translate(tmp_file, os.path.abspath(img_file), noData="none")
+        img_file_open = gdal.Open(os.path.abspath(img_file))
+        nbands = img_file_open.RasterCount
+        del img_file_open
+
+        if nbands == 6:
+            bands_list = [3,4,5,6]
+        elif nbands == 4:
+            bands_list = [1,2,3,4]
+        else:
+            report += "ERROR, number of bands invalid: {}, expected 4 or 6\n".format(nbands)
+            imgs_with_problems += 1
+            continue
+
+        tmp_bands = []
+        for band in bands_list:
+            tmp_band = enmask_file.replace(".tif", "_b{}.tif".format(band))
+            call('gdal_translate -b {} -a_nodata none -ot UInt16 "{}" "{}"'.format(band, os.path.abspath(img_file), tmp_band), shell=True)
+            tmp_bands.append(tmp_band)
+
+        call("gdal_merge.py -co BIGTIFF=YES -o {} -separate {} {} {} {}".format(tmp_file, *tmp_bands), shell=True)
 
         try:
             gdal_calc.Calc(calc="A*(B==0)", A=tmp_file, B=mask_file,
@@ -77,6 +97,8 @@ def script():
             imgs_with_problems += 1
 
         os.remove(tmp_file)
+        for tmp in tmp_bands:
+            os.remove(tmp)
 
     print(report)
     print("\nDONE: Images with problems: {} of {}\n".format(imgs_with_problems, len(img_files)))
