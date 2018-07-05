@@ -86,11 +86,11 @@ def script():
             call('gdal_translate -b {} -a_nodata none -ot UInt16 "{}" "{}"'.format(band, os.path.abspath(img_file), tmp_band), shell=True)
             tmp_bands.append(tmp_band)
 
-        call("gdal_merge.py -co BIGTIFF=YES -o {} -separate {} {} {} {}".format(tmp_file, *tmp_bands), shell=True)
+        call("gdal_merge.py -co BIGTIFF=YES -ot UInt16 -o {} -separate {} {} {} {}".format(tmp_file, *tmp_bands), shell=True)
 
         try:
             gdal_calc.Calc(calc="A*(B==0)", A=tmp_file, B=mask_file,
-                           outfile=enmask_file, allBands='A', overwrite=True)
+                           outfile=enmask_file, allBands='A', type="UInt16", overwrite=True)
             report += "DONE\n"
         except Exception as e:
             report += "ERROR applying the mask: {}\n".format(e)
