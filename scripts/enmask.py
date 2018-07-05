@@ -37,17 +37,18 @@ def script():
     # process
     print("\nWORKING DIRECTORY: {}".format(os.path.dirname(os.path.abspath(img_files[0]))))
     print("\nIMAGES TO PROCESS: {}\n".format(len(img_files)))
+    report = ""
     imgs_with_problems = 0
     for img_file in img_files:
         filename = os.path.basename(img_file).split(".")[0]
         path_row = os.path.basename(os.path.dirname(os.path.abspath(img_file)))
-        print("Processing '{}': ".format(img_file), end="")
+        report += "\nImage '{}': ".format(img_file)
         mask_file = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(img_file))))))
         mask_file = os.path.join(mask_file, "6.Procesos_Mosaico_Anual", "6.2.Enmascaramiento_Nubes",
                                  path_row, filename.replace("_Reflec", "_Mask.tif"))
 
         if not os.path.isfile(mask_file):
-            print("ERROR, mask file not exist:\n\t{}".format(mask_file))
+            report += "ERROR, mask file not exist:\n\t{}\n".format(mask_file)
             imgs_with_problems += 1
             continue
 
@@ -63,13 +64,18 @@ def script():
         tmp_file = enmask_file.replace(".tif", "_TMP.tif")
         gdal.Translate(tmp_file, os.path.abspath(img_file), noData="none")
 
-        gdal_calc.Calc(calc="A*(B==0)", A=tmp_file, B=mask_file,
-                       outfile=enmask_file, allBands='A', overwrite=True)
+        try:
+            gdal_calc.Calc(calc="A*(B==0)", A=tmp_file, B=mask_file,
+                           outfile=enmask_file, allBands='A', overwrite=True)
+        except:
+            report += "ERROR applying the mask, check the files.\n"
+            imgs_with_problems += 1
 
         os.remove(tmp_file)
 
-        print("DONE")
+        report += "DONE\n"
 
+    print(report)
     print("\nDONE: Images with problems: {} of {}\n".format(imgs_with_problems, len(img_files)))
 
 
