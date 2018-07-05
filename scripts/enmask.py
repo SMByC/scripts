@@ -41,6 +41,10 @@ def script():
     imgs_with_problems = 0
     for img_file in img_files:
         filename = os.path.basename(img_file).split(".")[0]
+        if filename.endswith("_Reflec_C"):
+            filename = filename.replace("_Reflec_C", "_Reflec")
+        if filename.endswith("_Reflec_c"):
+            filename = filename.replace("_Reflec_c", "_Reflec")
         path_row = os.path.basename(os.path.dirname(os.path.abspath(img_file)))
         report += "\nImage '{}': ".format(img_file)
         mask_file = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(img_file))))))
