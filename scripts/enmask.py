@@ -67,8 +67,8 @@ def script():
         try:
             gdal_calc.Calc(calc="A*(B==0)", A=tmp_file, B=mask_file,
                            outfile=enmask_file, allBands='A', overwrite=True)
-        except:
-            report += "ERROR applying the mask, check the files.\n"
+        except Exception as e:
+            report += "ERROR applying the mask: {}\n".format(e)
             imgs_with_problems += 1
 
         os.remove(tmp_file)
