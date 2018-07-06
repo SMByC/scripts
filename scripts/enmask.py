@@ -55,13 +55,13 @@ def script():
         if not os.path.isfile(mask_file):
             report += "ERROR, mask file not exist:\n\t{}\n".format(mask_file)
             imgs_with_problems += 1
-            #continue
+            continue
 
         enmask_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(img_file))))), "3.2.Reflectancia_SR", "3.2.2.Reflectancia_SR_Enmascarada",
-                                   path_row, filename.replace("_Reflec", "_SR_Enmask.tif"))
+                                   path_row, filename.replace("_Reflec", "_Reflec_SR_Enmask.tif"))
 
         if os.path.isfile(enmask_file):
-            enmask_file = enmask_file.replace("_SR_Enmask.tif", "_SR_Enmask_script.tif")
+            enmask_file = enmask_file.replace("_Reflec_SR_Enmask.tif", "_Reflec_SR_Enmask_script.tif")
             if os.path.isfile(enmask_file):
                 os.remove(enmask_file)
 
