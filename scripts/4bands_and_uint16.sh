@@ -35,14 +35,14 @@ function process () {
 
     out_name=`echo $1 | cut -d'.' -f1`
 
-    for band in $(seq 1 4); do
+    for band in $(seq 3 6); do
         gdal_translate -a_nodata none -ot UInt16 -b ${band} $1 ${band}.tif
     done
 
     gdal_merge.py -ot "UInt16" -co BIGTIFF=YES -o ${out_name}_4bands.tif \
-        -separate 1.tif 2.tif 3.tif 4.tif
+        -separate 3.tif 4.tif 5.tif 6.tif
 
-    rm 1.tif 2.tif 3.tif 4.tif
+    rm 3.tif 4.tif 5.tif 6.tif
 
 }
 
