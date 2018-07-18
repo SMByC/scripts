@@ -46,7 +46,7 @@ out_name=`echo $image | cut -d'.' -f1`
 
 gdal_translate -a_nodata none $image ${out_name}_tmp.tif
 
-gdal_calc.py --calc="A*(B==0)" -A="${out_name}_tmp.tif" -B="${mask}" --allBands="A" --outfile="${out_name}_enmask.tif"
+gdal_calc.py --calc="A*(B==0)" -A "${out_name}_tmp.tif" -B "${mask}" --allBands="A" --outfile="${out_name}_enmask.tif"
 
 rm ${out_name}_tmp.tif
 
