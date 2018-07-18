@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+#
+#  Copyright (C) 2018 Xavier Corredor Llano, SMBYC
+#  Email: xcorredorl at ideam.gov.co
+#
+# Apply the mask to file
+#
+
+# break with any error
+set -e
+
+##### help
+function help(){ cat << END
+usage: apply-mask [-h] MASK FILE
+
+Apply the mask to file
+
+arguments:
+    MASK    mask file
+    FILE    file to process
+
+END
+}
+
+if (( $# < 2 )); then
+    echo -e "Error: required arguments, see how to usage:\n"
+    help
+    exit 1
+fi
+
+for arg in "$@"
+do
+    if [[ $arg == "-h" ]]
+    then
+        help
+        exit 0
+    fi
+done
+#####
+
+mask=$1
+image=$2
+echo -e "\nMasking : $image\n"
+out_name=`echo $image | cut -d'.' -f1`
+
+gdal_translate -a_nodata none $image ${out_name}_tmp.tif
+
+gdal_calc.py --calc="A*(B==0)" -A="${out_name}_tmp.tif" -B="${mask}" --allBands="A" --outfile="${out_name}_enmask.tif"
+
+rm ${out_name}_tmp.tif
+
+echo "DONE"
+
+
