@@ -54,7 +54,7 @@ def script():
         process_dir = os.path.dirname(metadata_file)
         print("PROCESSING: " + os.path.basename(process_dir))
 
-        call("gdalbuildvrt -resolution user -tr 20 20 -separate allbands.vrt B0[1-8].jp2 B8A.jp2 B09.jp2 B1[0-2].jp2",
+        call("gdalbuildvrt -resolution user -tr 10 10 -separate allbands.vrt B0[1-8].jp2 B8A.jp2 B09.jp2 B1[0-2].jp2",
              shell=True, cwd=process_dir)
 
         call("export PYTHONPATH='{}' && ".format(libs_dir) + "python3.6 " + libs_dir+"/fmask/bin/fmask_sentinel2makeAnglesImage.py " + "-i metadata.xml -o angles.img",
