@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017 Xavier Corredor Llano, SMBYC
+#  Copyright (C) 2018 Xavier Corredor Llano, SMBYC
 #  Email: xcorredorl at ideam.gov.co
 #
 # Extract all input landsat compressed (tar.gz) files
 #
 
 # break with any error
-# set -e
+set -e
 
 ##### help
 function help(){ cat << END

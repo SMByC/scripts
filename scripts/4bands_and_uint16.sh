@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+#
+#  Copyright (C) 2018 Xavier Corredor Llano, SMBYC
+#  Email: xcorredorl at ideam.gov.co
+#
+# Re-stack to 4 bands and convert to UInt16
+#
+
+# break with any error
+set -e
 
 ##### help
 function help(){ cat << END

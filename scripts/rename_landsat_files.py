@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017 Xavier Corredor Llano, SMBYC
+#  Copyright (C) 2018 Xavier Corredor Llano, SMBYC
 #  Email: xcorredorl at ideam.gov.co
 #
 # Busca recursivamente los archivos especificos (segun el tipo/extension)
