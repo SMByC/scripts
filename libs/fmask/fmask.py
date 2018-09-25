@@ -1292,6 +1292,6 @@ def maskAndBuffer(info, inputs, outputs, otherargs):
     out[cloud] = OUTCODE_CLOUD
     out[shadow] = OUTCODE_SHADOW
     out[snow] = OUTCODE_SNOW
-    #out[water] = OUTCODE_WATER
+    out[water] = OUTCODE_WATER
     out[resetNullmask] = outNullval
     outputs.out = numpy.array([out])

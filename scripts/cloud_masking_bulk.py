@@ -64,7 +64,7 @@ def script():
                     [mtl_files.append(os.path.abspath(file)) for file in files]
     print("{} Landsat files to process\n".format(len(mtl_files)))
 
-    filters_enabled = {"Fmask Cloud": True, "Fmask Shadow": True, "Fmask Snow": True, "Fmask Water": True}
+    filters_enabled = {"Fmask Cloud": True, "Fmask Shadow": True, "Fmask Snow": True, "Fmask Water": False}
 
     for mtl_file in mtl_files:
         print("PROCESSING: " + os.path.basename(mtl_file).split("_MTL.txt")[0])
@@ -225,8 +225,7 @@ def do_fmask(mtl_file, filters_enabled, tmp_dir, min_cloud_size=0, cloud_prob_th
     # tmp file for toa
     toa_file = os.path.join(tmp_dir, "toa.tif")
 
-    landsatTOA.makeTOAReflectance(reflective_stack_file, mtl_file,
-                                  angles_file, toa_file)
+    landsatTOA.makeTOAReflectance(reflective_stack_file, mtl_file, angles_file, toa_file)
 
     ########################################
     # cloud mask
