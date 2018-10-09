@@ -53,7 +53,7 @@ def script():
             continue
         if "/Z19/" in img_file or "/z19/" in img_file or "/Z17/" in img_file or "/z17/" in img_file or \
            "/Z_19/" in img_file or "/z_19/" in img_file or "/Z_17/" in img_file or "/z_17/" in img_file or \
-           "/19N/" in img_file or "/17N/":
+           "/19N/" in img_file or "/17N/" in img_file:
             continue
 
         # check the band number
