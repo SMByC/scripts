@@ -46,6 +46,8 @@ def script():
             imgs_with_problems += 1
             continue
 
+        parent_dir = os.path.basename(os.path.dirname(os.path.dirname(img_file)))
+
         # exceptions
         if "6.4.Compuestos" in img_file:
             continue
@@ -54,6 +56,9 @@ def script():
         if img_file.endswith("Reflec_SR.tif"):
             if gdal_file.RasterCount != 6:
                 errors += "\t- Imagen con {} bandas, esperado 6 bandas\n".format(gdal_file.RasterCount)
+        elif parent_dir == "6.2.Enmascaramiento_Nubes":
+            if gdal_file.RasterCount != 1:
+                errors += "\t- Imagen con {} bandas, esperado 1 bandas\n".format(gdal_file.RasterCount)
         else:
             if gdal_file.RasterCount != 4:
                 errors += "\t- Imagen con {} bandas, esperado 4 bandas\n".format(gdal_file.RasterCount)
@@ -66,7 +71,7 @@ def script():
         if img_file.endswith("Reflec_SR.tif"):
             if gdal_file.GetRasterBand(1).DataType not in [3, 5]:
                 errors += "\t- Imagen con tipo de dato {}, esperado {}, {}\n".format(dtype[gdal_file.GetRasterBand(1).DataType], dtype[3], dtype[5])
-        else:
+        elif parent_dir != "6.2.Enmascaramiento_Nubes":
             if gdal_file.GetRasterBand(1).DataType not in [2, 4]:
                 errors += "\t- Imagen con tipo de dato {}, esperado {}, {}\n".format(dtype[gdal_file.GetRasterBand(1).DataType], dtype[2], dtype[4])
 
