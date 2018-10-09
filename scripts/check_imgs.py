@@ -181,13 +181,15 @@ def script():
         # statistics
         try:
             filename = os.path.basename(img_file).split(".")[0]
+            parent_dir = os.path.basename(os.path.dirname(os.path.dirname(img_file)))
             path = int(filename.split("_")[1])
             row = int(filename.split("_")[2])
             if os.path.basename(os.path.dirname(img_file)) == "{}_{}".format(path, row):
-                if "{}_{}".format(path, row) not in num_files_in_path_row:
-                    num_files_in_path_row["{}_{}".format(path, row)] = 1
+                pair_path = parent_dir + "/" + "{}_{}".format(path, row)
+                if pair_path not in num_files_in_path_row:
+                    num_files_in_path_row[pair_path] = 1
                 else:
-                    num_files_in_path_row["{}_{}".format(path, row)] += 1
+                    num_files_in_path_row[pair_path] += 1
         except:
             pass
 
