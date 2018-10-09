@@ -29,6 +29,9 @@ def script():
                     files = [os.path.join(root, x) for x in files if x.endswith(('.tif', '.TIF'))]
                     [img_files.append(os.path.abspath(file)) for file in files]
 
+    # statistics of number of files in path-row directory
+    num_files_in_path_row = {}
+
     # process
     print("\nIMAGES TO PROCESS: {}".format(len(img_files)))
     imgs_with_problems = 0
@@ -146,10 +149,29 @@ def script():
         except:
             errors += "\t- No se pudo verificar si existe la mascara para el archivo enmascarado\n"
 
+        # statistics
+        try:
+            filename = os.path.basename(img_file).split(".")[0]
+            path = int(filename.split("_")[1])
+            row = int(filename.split("_")[2])
+            if os.path.basename(os.path.dirname(img_file)) != "{}_{}".format(path, row):
+                if "{}_{}".format(path, row) not in num_files_in_path_row:
+                    num_files_in_path_row["{}_{}".format(path, row)] = 1
+                else:
+                    num_files_in_path_row["{}_{}".format(path, row)] += 1
+        except:
+            errors += "\t- No se pudo verificar si existe la mascara para el archivo enmascarado\n"
+
+        # finally
+
         if errors != "":
             print("\nERRORES PARA: " + img_file + ":")
             print(errors)
             imgs_with_problems += 1
+
+    print("\nEstadisticas de imagenes por cada path-row:")
+    for path_row, num_files in num_files_in_path_row.items():
+        print("\t{}: {}".format(path_row, num_files))
 
     print("\nDONE: Images with problems: {} of {}\n".format(imgs_with_problems, len(img_files)))
 
