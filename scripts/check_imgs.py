@@ -51,6 +51,9 @@ def script():
         # exceptions
         if "6.4.Compuestos" in img_file:
             continue
+        if "Z19" in img_file or "z19" in img_file or "Z17" in img_file or "z17" in img_file:
+            continue
+
 
         # check the band number
         if img_file.endswith("Reflec_SR.tif"):
@@ -111,8 +114,7 @@ def script():
             except:
                 errors += "\t- No se pudo verificar la proyeccion\n"
 
-        if (parent_dir == "3.2.2.Reflectancia_SR_Enmascarada" and ("Z19" not in img_file or "Z17" not in img_file)) or \
-           (parent_dir == "3.2.3.Reflectancia_Normalizada"):
+        if parent_dir == "3.2.2.Reflectancia_SR_Enmascarada" or parent_dir == "3.2.3.Reflectancia_Normalizada":
             try:
                 filename = os.path.basename(img_file).split(".")[0]
                 path = int(filename.split("_")[1])
