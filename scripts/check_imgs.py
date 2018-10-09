@@ -46,6 +46,10 @@ def script():
             imgs_with_problems += 1
             continue
 
+        # exceptions
+        if "6.4.Compuestos" in img_file:
+            continue
+
         # check the band number
         if img_file.endswith("Reflec_SR.tif"):
             if gdal_file.RasterCount != 6:
@@ -74,31 +78,48 @@ def script():
             errors += "\t- Imagen con tamaño de pixel {}x{}, esperado 30.0x30.0\n".format(pixel_size_x, pixel_size_y)
 
         # check the projection
-        try:
-            filename = os.path.basename(img_file).split(".")[0]
-            path = int(filename.split("_")[1])
-            row = int(filename.split("_")[2])
+        parent_dir = os.path.basename(os.path.dirname(os.path.dirname(img_file)))
+        if parent_dir == "3.2.1.Reflectancia_SR":
+            try:
+                filename = os.path.basename(img_file).split(".")[0]
+                path = int(filename.split("_")[1])
+                row = int(filename.split("_")[2])
 
-            proj = osr.SpatialReference(wkt=gdal_file.GetProjection())
-            epsg = int(proj.GetAttrValue('AUTHORITY', 1))
+                proj = osr.SpatialReference(wkt=gdal_file.GetProjection())
+                epsg = int(proj.GetAttrValue('AUTHORITY', 1))
 
-            if path in [3, 4, 5]:
-                if epsg != 32619:
-                    errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32619)
-            elif path in [6] and row in [55, 56, 57, 58]:
-                if epsg != 32619:
-                    errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32619)
-            elif path in [7] and row in [52]:
-                if epsg != 32619:
-                    errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32619)
-            elif path in [10] and row in [59]:
-                if epsg != 32617:
-                    errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32617)
-            else:
+                if path in [3, 4, 5]:
+                    if epsg != 32619:
+                        errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32619)
+                elif path in [6] and row in [55, 56, 57, 58]:
+                    if epsg != 32619:
+                        errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32619)
+                elif path in [7] and row in [52]:
+                    if epsg != 32619:
+                        errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32619)
+                elif path in [10] and row in [59]:
+                    if epsg != 32617:
+                        errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32617)
+                else:
+                    if epsg != 32618:
+                        errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32618)
+            except:
+                errors += "\t- No se pudo verificar la proyeccion\n"
+
+        if (parent_dir == "3.2.2.Reflectancia_SR_Enmascarada" and ("Z19" not in img_file or "Z17" not in img_file)) or \
+           (parent_dir == "3.2.3.Reflectancia_Normalizada"):
+            try:
+                filename = os.path.basename(img_file).split(".")[0]
+                path = int(filename.split("_")[1])
+                row = int(filename.split("_")[2])
+
+                proj = osr.SpatialReference(wkt=gdal_file.GetProjection())
+                epsg = int(proj.GetAttrValue('AUTHORITY', 1))
+
                 if epsg != 32618:
                     errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32618)
-        except:
-            errors += "\t- No se pudo verificar la proyeccion\n"
+            except:
+                errors += "\t- No se pudo verificar la proyeccion\n"
 
         # check SMByC finename
         try:
