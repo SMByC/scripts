@@ -52,9 +52,9 @@ def script():
         if "6.4.Compuestos" in img_file:
             continue
         if "/Z19/" in img_file or "/z19/" in img_file or "/Z17/" in img_file or "/z17/" in img_file or \
-           "/Z_19/" in img_file or "/z_19/" in img_file or "/Z_17/" in img_file or "/z_17/" in img_file:
+           "/Z_19/" in img_file or "/z_19/" in img_file or "/Z_17/" in img_file or "/z_17/" in img_file or \
+           "/19N/" in img_file or "/17N/":
             continue
-
 
         # check the band number
         if img_file.endswith("Reflec_SR.tif"):
@@ -183,13 +183,13 @@ def script():
             filename = os.path.basename(img_file).split(".")[0]
             path = int(filename.split("_")[1])
             row = int(filename.split("_")[2])
-            if os.path.basename(os.path.dirname(img_file)) != "{}_{}".format(path, row):
+            if os.path.basename(os.path.dirname(img_file)) == "{}_{}".format(path, row):
                 if "{}_{}".format(path, row) not in num_files_in_path_row:
                     num_files_in_path_row["{}_{}".format(path, row)] = 1
                 else:
                     num_files_in_path_row["{}_{}".format(path, row)] += 1
         except:
-            errors += "\t- No se pudo verificar si existe la mascara para el archivo enmascarado\n"
+            pass
 
         # finally
 
