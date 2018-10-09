@@ -141,9 +141,9 @@ def script():
 
             parent_dir = os.path.basename(os.path.dirname(os.path.dirname(img_file)))
             if parent_dir == "3.2.2.Reflectancia_SR_Enmascarada":
-                mask_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(img_file))),
-                                         "3.2.2.Reflectancia_SR_Enmascarada", "{}_{}".format(path, row),
-                                         filename.split("Reflec_SR_Enmask.tif")[0]+"Mask.tif")
+                mask_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(img_file))))),
+                                         "6.Procesos_Mosaico_Anual", "6.2.Enmascaramiento_Nubes", "{}_{}".format(path, row),
+                                         filename.split("Reflec_SR_Enmask")[0]+"Mask.tif")
                 if not os.path.isfile(mask_path):
                     errors += "\t- Imagen enmascarada sin archivo de mascara, ruta de mascara esperada: {}\n".format(mask_path)
         except:
