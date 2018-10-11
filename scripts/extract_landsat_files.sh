@@ -8,7 +8,7 @@
 #
 
 # break with any error
-set -e
+#set -e
 
 ##### help
 function help(){ cat << END
