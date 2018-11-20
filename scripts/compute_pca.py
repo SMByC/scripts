@@ -141,9 +141,13 @@ def pca(a, b, n_pc, estimator_matrix, out_dir, n_threads, block_size, nodata):
     def get_principal_component(i, j):
         return eigenvectors[j, i] * (get_raw_band_from_stack(j) - band_mean[j])
 
-    print("\nComputing and saving the components:")
+    print("\nComputing and saving the components in pca-stack.tif:")
 
-    pca_files = []
+    # save component as file
+    tmp_pca_file = Path(out_dir) / 'pca-stack.tif'
+    driver = gdal.GetDriverByName("GTiff")
+    out_pc = driver.Create(str(tmp_pca_file), src_ds_A.RasterXSize, src_ds_A.RasterYSize, n_pc, gdal.GDT_Float32)
+
     for i in range(n_pc):
         pc = dask.delayed(sum)([get_principal_component(i, j) for j in range(n_bands)])
         pc = pc.astype(np.float32)
@@ -151,33 +155,21 @@ def pca(a, b, n_pc, estimator_matrix, out_dir, n_threads, block_size, nodata):
         if nodata is not None:
             pc[nodata_mask] = 0
         pc = pc.reshape((src_ds_A.RasterYSize, src_ds_A.RasterXSize))
-        # save component as file
-        tmp_pca_file = Path(out_dir) / 'pc_{}.tif'.format(i+1)
-        driver = gdal.GetDriverByName("GTiff")
-        out_pc = driver.Create(str(tmp_pca_file), src_ds_A.RasterXSize, src_ds_A.RasterYSize, 1, gdal.GDT_Float32)
-        pcband = out_pc.GetRasterBand(1)
+
+        pcband = out_pc.GetRasterBand(i+1)
         if nodata is not None:
             pcband.SetNoDataValue(0)
         pcband.WriteArray(pc)
-        # set projection and geotransform
-        if src_ds_A.GetGeoTransform() is not None:
-            out_pc.SetGeoTransform(src_ds_A.GetGeoTransform())
-        if src_ds_A.GetProjection() is not None:
-            out_pc.SetProjection(src_ds_A.GetProjection())
-        out_pc.FlushCache()
-        del pc, pcband, out_pc
-
-        pca_files.append(tmp_pca_file)
+        del pc, pcband
+    # set projection and geotransform
+    if src_ds_A.GetGeoTransform() is not None:
+        out_pc.SetGeoTransform(src_ds_A.GetGeoTransform())
+    if src_ds_A.GetProjection() is not None:
+        out_pc.SetProjection(src_ds_A.GetProjection())
+    out_pc.FlushCache()
 
     # free mem
-    del src_ds_A, nodata_mask
-
-    # compute the pyramids for each pc image
-    @dask.delayed
-    def pyramids(pca_file):
-        call("gdaladdo -q --config BIGTIFF_OVERVIEW YES {}".format(pca_file), shell=True)
-
-    dask.compute(*[pyramids(pca_file) for pca_file in pca_files], num_workers=2)
+    del src_ds_A, nodata_mask, out_pc
 
     print("\nDONE")
 
