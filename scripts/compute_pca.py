@@ -11,6 +11,7 @@ import dask
 from multiprocessing import cpu_count
 from osgeo import gdal
 from dask import array as da
+from dask.diagnostics import ProgressBar
 from multiprocessing.pool import ThreadPool
 from subprocess import call
 
@@ -43,8 +44,19 @@ def pca(a, b, n_pc, estimator_matrix, out_dir, n_threads, block_size, nodata):
         nodata = ds.GetRasterBand(1).GetNoDataValue()
         del ds
 
+    print("\nPRINCIPAL COMPONENTS ANALYSIS")
+    print("    Compute {} components for:".format(n_pc))
+    print("    A: {}".format(A))
+    if B is not None:
+        print("    B: {}".format(B))
+
     # init dask as threads (shared memory is required)
     dask.config.set(pool=ThreadPool(n_threads))
+    # registered Dask progress bar
+    pbar = ProgressBar()
+    pbar.register()
+
+    print("\nRead and prepare data:")
 
     raw_image = []
     nodata_mask = None
@@ -80,6 +92,7 @@ def pca(a, b, n_pc, estimator_matrix, out_dir, n_threads, block_size, nodata):
 
     ########
     # compute the matrix correlation/covariance
+    print("\nComputing the estimator matrix:")
     estimation_matrix = np.empty((n_bands, n_bands))
     if estimator_matrix == "correlation":
         for i in range(n_bands):
@@ -128,6 +141,8 @@ def pca(a, b, n_pc, estimator_matrix, out_dir, n_threads, block_size, nodata):
     def get_principal_component(i, j):
         return eigenvectors[j, i] * (get_raw_band_from_stack(j) - band_mean[j])
 
+    print("\nComputing and saving the components:")
+
     pca_files = []
     for i in range(n_pc):
         pc = dask.delayed(sum)([get_principal_component(i, j) for j in range(n_bands)])
@@ -163,6 +178,8 @@ def pca(a, b, n_pc, estimator_matrix, out_dir, n_threads, block_size, nodata):
         call("gdaladdo -q --config BIGTIFF_OVERVIEW YES {}".format(pca_file), shell=True)
 
     dask.compute(*[pyramids(pca_file) for pca_file in pca_files], num_workers=2)
+
+    print("\nDONE")
 
 
 if __name__ == '__main__':
