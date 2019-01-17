@@ -86,9 +86,11 @@ export PATH="/home/smbyc/xtremio/imagenes/Prueba/ESPA/bin:$PATH"
 
 ##### RUN
 
+echo -e "\nConvert raw Landsat product (LPGS - level 1) to ESPA (level 2)\n"
+
 for DIR in "$@"
 do
-    echo "Converting: $DIR"
+    echo -e "\nCONVERTING: $DIR \n"
     cd $DIR
     for MTL in `ls *_MTL.txt`; do
         echo $MTL
