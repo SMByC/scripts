@@ -43,6 +43,7 @@ done
 export PREFIX="/home/smbyc/xtremio/imagenes/Prueba/ESPA"
 
 export L8_AUX_DIR="/home/smbyc/xtremio/imagenes/Prueba/ESPA/static_data"
+export LEDAPS_AUX_DIR="/home/smbyc/xtremio/imagenes/Prueba/ESPA/static_data"
 export ESPA_LAND_MASS_POLYGON="/home/smbyc/xtremio/imagenes/Prueba/ESPA/static_data/land_no_buf.ply"
 
 export TIFFINC="/usr/include"
