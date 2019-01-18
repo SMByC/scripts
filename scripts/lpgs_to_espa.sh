@@ -87,7 +87,7 @@ export PATH="/home/smbyc/xtremio/imagenes/Prueba/ESPA/bin:$PATH"
 
 ##### RUN
 
-echo -e "\nConvert raw Landsat product (LPGS - level 1) to ESPA (level 2)\n"
+echo -e "\nConvert raw Landsat product (LPGS - level 1) to ESPA (level 2)"
 
 for DIR in "$@"
 do
@@ -112,6 +112,7 @@ do
         generate_pixel_qa --xml ${BASE_NAME}.xml
         convert_espa_to_gtif --xml ${BASE_NAME}.xml --gtif $BASE_NAME
 
+        rm *.hdr *.img *.tfw
     done
 done
 
