@@ -99,6 +99,9 @@ do
         BASE_NAME="${MTL%_MTL.txt*}"
         echo $BASE_NAME
 
+        # MTL backup because the convert_espa_to_gtif delete it
+        cp $MTL ${MTL}_tmp
+
         convert_lpgs_to_espa --mtl $MTL
 
         if [[ $BASE_NAME == "LC08"* || $BASE_NAME == "LC8"* ]]; then
@@ -111,6 +114,7 @@ do
         generate_pixel_qa --xml ${BASE_NAME}.xml
         convert_espa_to_gtif --xml ${BASE_NAME}.xml --gtif $BASE_NAME
 
+        mv ${MTL}_tmp $MTL
         rm *.hdr *.img *.tfw
     done
     cd $PWD
