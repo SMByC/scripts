@@ -95,10 +95,8 @@ do
     echo -e "\nCONVERTING: $DIR \n"
     cd $DIR
     for MTL in `ls *_MTL.txt`; do
-        echo $MTL
 
-        BASE_NAME=$(basename -- "$MTL")
-        BASE_NAME="${BASE_NAME%_MTL.txt*}"
+        BASE_NAME="${MTL%_MTL.txt*}"
         echo $BASE_NAME
 
         convert_lpgs_to_espa --mtl $MTL
