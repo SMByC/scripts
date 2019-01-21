@@ -102,7 +102,7 @@ do
         # MTL backup because the convert_espa_to_gtif delete it
         cp $MTL ${MTL}_tmp
 
-        convert_lpgs_to_espa --mtl $MTL
+        convert_lpgs_to_espa --mtl $MTL --del_src_files
 
         if [[ $BASE_NAME == "LC08"* || $BASE_NAME == "LC8"* ]]; then
             do_lasrc.py --xml ${BASE_NAME}.xml
