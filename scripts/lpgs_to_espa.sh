@@ -87,7 +87,7 @@ export PATH="/home/smbyc/xtremio/imagenes/Prueba/ESPA/bin:$PATH"
 
 ##### RUN
 
-PWD=`pwd`
+BASEDIR=`pwd`
 echo -e "\nConvert raw Landsat product (LPGS - level 1) to ESPA (level 2)"
 
 for DIR in "$@"
@@ -117,7 +117,7 @@ do
         mv ${MTL}_tmp $MTL
         rm *.hdr *.img *.tfw
     done
-    cd $PWD
+    cd $BASEDIR
 done
 
 echo -e "\nDONE"
