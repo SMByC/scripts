@@ -57,10 +57,10 @@ def script():
         call("gdalbuildvrt -resolution user -tr 20 20 -separate allbands.vrt B0[1-8].jp2 B8A.jp2 B09.jp2 B1[0-2].jp2",
              shell=True, cwd=process_dir)
 
-        call("export PYTHONPATH='{}' && ".format(libs_dir) + "python3.6 " + libs_dir+"/fmask/bin/fmask_sentinel2makeAnglesImage.py " + "-i metadata.xml -o angles.img",
+        call("export PYTHONPATH='{}' && ".format(libs_dir) + "python3 " + libs_dir+"/fmask/bin/fmask_sentinel2makeAnglesImage.py " + "-i metadata.xml -o angles.img",
              shell=True, cwd=process_dir)
 
-        call("export PYTHONPATH='{}' && ".format(libs_dir) + "python3.6 " + libs_dir+"/fmask/bin/fmask_sentinel2Stacked.py " + "-a allbands.vrt -z angles.img -o cloud20x20.img",
+        call("export PYTHONPATH='{}' && ".format(libs_dir) + "python3 " + libs_dir+"/fmask/bin/fmask_sentinel2Stacked.py " + "-a allbands.vrt -z angles.img -o cloud20x20.img",
              shell=True, cwd=process_dir)
 
         call("gdal_translate -tr 10 10 cloud20x20.img cloud10x10.img", shell=True, cwd=process_dir)
