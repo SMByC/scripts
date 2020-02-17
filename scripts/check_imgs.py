@@ -88,7 +88,7 @@ def script():
 
         # check the projection
         parent_dir = os.path.basename(os.path.dirname(os.path.dirname(img_file)))
-        if parent_dir == "3.2.1.Reflectancia_SR":
+        if parent_dir == "3.2.1.Reflectancia_SR" or parent_dir == "6.2.Enmascaramiento_Nubes":
             try:
                 filename = os.path.basename(img_file).split(".")[0]
                 path = int(filename.split("_")[1])
@@ -107,6 +107,9 @@ def script():
                     if epsg != 32619:
                         errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32619)
                 elif path in [10] and row in [59]:
+                    if epsg != 32617:
+                        errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32617)
+                elif path in [11] and row in [55]:
                     if epsg != 32617:
                         errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32617)
                 else:

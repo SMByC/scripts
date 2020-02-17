@@ -16,7 +16,7 @@ represent potential shadow objects.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
+# as published by the Free Software Foundation; either version 3
 # of the License, or (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -29,18 +29,10 @@ represent potential shadow objects.
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import numpy
-import sys
 from scipy.ndimage import grey_erosion, grey_dilation, minimum_filter
 
 # load _fillminima
-is_64bits = sys.maxsize > 2**32
-if is_64bits:
-    if sys.platform == "darwin":
-        from CloudMasking.libs.fmask.ios64 import _fillminima
-    else:
-        from . import _fillminima
-else:
-    from CloudMasking.libs.fmask.lib32 import _fillminima
+from . import _fillminima
 
 
 def fillMinima(img, nullval, boundaryval):
@@ -77,7 +69,7 @@ def fillMinima(img, nullval, boundaryval):
     boundaryCols = boundaryCols.astype(numpy.int64)
 
     _fillminima.fillMinima(img, img2, hMin, hMax, nullmask, boundaryval,
-                        boundaryRows, boundaryCols)
+                        boundaryRows, boundaryCols)    
     
     img2[nullmask] = nullval
     

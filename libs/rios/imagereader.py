@@ -23,7 +23,7 @@ import os
 import sys
 import copy
 import numpy
-from osgeo import gdal
+
 from . import imageio
 from . import inputcollection
 from . import readerinfo
@@ -155,7 +155,10 @@ class ImageReader(object):
             # the standard InputCollection. 
             imageList = []
             self.layerselectionList = []
-            for name in imageContainer.keys():
+            # The image names, in a fixed order, so that everything can use the same order. 
+            self.imagenamesOrdered = sorted(imageContainer.keys())
+            
+            for name in self.imagenamesOrdered:
                 filename = imageContainer[name]
                 if isinstance(filename, list):
                     # We have actually been given a list of filenames, so tack then all on to the imageList
@@ -271,7 +274,7 @@ class ImageReader(object):
 
     def allowResample(self, resamplemethod="near", refpath=None, refgeotrans=None, 
             refproj=None, refNCols=None, refNRows=None, refPixgrid=None, 
-            tempdir='.', useVRT=False):
+            tempdir='.', useVRT=False, allowOverviewsGdalwarp=False):
         """
         By default, resampling is disabled (all datasets must
         match). Calling this enables it. 
@@ -310,7 +313,7 @@ class ImageReader(object):
             else:
                 # create a list out of the dictionary in the same way as the constructor does
                 resamplemethodlist = []
-                for name in resamplemethod.keys():
+                for name in self.imagenamesOrdered:
                     method = resamplemethod[name]
                     if isinstance(method, list):
                         # We have actually been given a list of method, so tack then all on to the resamplemethodlist
@@ -331,7 +334,8 @@ class ImageReader(object):
 
         try:   
             # resample all in collection to reference
-            self.inputs.resampleAllToReference(self.footprint, resamplemethodlist, tempdir, useVRT)
+            self.inputs.resampleAllToReference(self.footprint, resamplemethodlist, tempdir, useVRT,
+                allowOverviewsGdalwarp)
         finally:
             # if the user interrupted, then ensure all temp
             # files removed.
@@ -494,7 +498,7 @@ class ImageReader(object):
             # to the constructor and return a dictionary
             blockDict = {}
             i = 0
-            for name in self.imageContainer.keys():
+            for name in self.imagenamesOrdered:
                 filename = self.imageContainer[name]
                 if isinstance(filename, list):
                     listLen = len(filename)

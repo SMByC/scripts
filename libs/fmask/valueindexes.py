@@ -3,7 +3,7 @@
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
+# as published by the Free Software Foundation; either version 3
 # of the License, or (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -20,14 +20,7 @@ import sys
 import numpy
 
 # load _valueindexes
-is_64bits = sys.maxsize > 2**32
-if is_64bits:
-    if sys.platform == "darwin":
-        from CloudMasking.libs.fmask.ios64 import _valueindexes
-    else:
-        from . import _valueindexes
-else:
-    from CloudMasking.libs.fmask.lib32 import _valueindexes
+from . import _valueindexes
 
 
 class ValueIndexesError(Exception):
@@ -147,7 +140,7 @@ class ValueIndexes(object):
             # a new element of that value. 
             currentIndex = self.start.copy().astype(numpy.uint32)
 
-            _valueindexes.valndxFunc(a, self.indexes, valrange[0], valrange[1],
+            _valueindexes.valndxFunc(a, self.indexes, valrange[0], valrange[1], 
                         self.valLU, currentIndex)
 
     def getIndexes(self, val):
