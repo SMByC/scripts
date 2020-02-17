@@ -1,6 +1,7 @@
 import datetime
 import os
 import argparse
+import rasterio
 from osgeo import gdal
 from osgeo import osr
 gdal.UseExceptions()
@@ -94,8 +95,8 @@ def script():
                 path = int(filename.split("_")[1])
                 row = int(filename.split("_")[2])
 
-                proj = osr.SpatialReference(wkt=gdal_file.GetProjection())
-                epsg = int(proj.GetAttrValue('AUTHORITY', 1))
+                with rasterio.open(img_file) as src:
+                    epsg = src.crs.to_epsg()
 
                 if path in [3, 4, 5]:
                     if epsg != 32619:
@@ -120,12 +121,8 @@ def script():
 
         if parent_dir == "3.2.2.Reflectancia_SR_Enmascarada" or parent_dir == "3.2.3.Reflectancia_Normalizada":
             try:
-                filename = os.path.basename(img_file).split(".")[0]
-                path = int(filename.split("_")[1])
-                row = int(filename.split("_")[2])
-
-                proj = osr.SpatialReference(wkt=gdal_file.GetProjection())
-                epsg = int(proj.GetAttrValue('AUTHORITY', 1))
+                with rasterio.open(img_file) as src:
+                    epsg = src.crs.to_epsg()
 
                 if epsg != 32618:
                     errors += "\t- Imagen con sistema coordenadas {}, esperado {}\n".format(epsg, 32618)
