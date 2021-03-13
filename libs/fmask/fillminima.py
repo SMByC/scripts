@@ -32,7 +32,7 @@ import numpy
 from scipy.ndimage import grey_erosion, grey_dilation, minimum_filter
 
 # load _fillminima
-from CloudMasking.libs.fmask import _fillminima
+from . import _fillminima
 
 
 def fillMinima(img, nullval, boundaryval):
