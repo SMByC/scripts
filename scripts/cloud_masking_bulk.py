@@ -341,7 +341,7 @@ def do_blue_band(mtl_file, blue_band_l457, blue_band_l8, tmp_dir):
     ########################################
     # do blue band filter
     gdal_calc.Calc(calc="1*(A<{threshold})+6*(A>={threshold})".format(threshold=bb_threshold),
-                   A=blue_band_file, outfile=cloud_bb_file, type="Byte")
+                   A=blue_band_file, outfile=cloud_bb_file, type="Byte", quiet=True)
 
     # save final result of masking
     return cloud_bb_file
