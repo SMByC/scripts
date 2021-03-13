@@ -20,7 +20,7 @@ import sys
 import numpy
 
 # load _valueindexes
-from . import _valueindexes
+from CloudMasking.libs.fmask import _valueindexes
 
 
 class ValueIndexesError(Exception):
