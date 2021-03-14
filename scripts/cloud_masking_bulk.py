@@ -95,6 +95,10 @@ def script():
                            outfile=cloud_mask_file,
                            A=cloud_masking_files[0], B=cloud_masking_files[1], quiet=True)
 
+        # copying style
+        shutil.copy(os.path.join(os.path.dirname(os.path.realpath(__file__)), "style_mask.qml"),
+                    mtl_file.split("_MTL.txt")[0] + "_mask.qml")
+
         shutil.rmtree(tmp_dir, ignore_errors=True)
 
         ### ending fmask process
@@ -345,8 +349,6 @@ def do_blue_band(mtl_file, blue_band_l457, blue_band_l8, tmp_dir):
 
     # save final result of masking
     return cloud_bb_file
-
-    print("done")
 
 
 def mtl2dict(filename, to_float=True):
