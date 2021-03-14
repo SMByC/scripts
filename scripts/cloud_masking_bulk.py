@@ -96,8 +96,11 @@ def script():
                            A=cloud_masking_files[0], B=cloud_masking_files[1], quiet=True)
 
         # copying style
-        shutil.copy(os.path.join(os.path.dirname(os.path.realpath(__file__)), "style_mask.qml"),
-                    mtl_file.split("_MTL.txt")[0] + "_mask.qml")
+        try:
+            shutil.copyfile(os.path.join(os.path.dirname(os.path.realpath(__file__)), "style_mask.qml"),
+                            mtl_file.split("_MTL.txt")[0] + "_mask.qml")
+        except:
+            pass
 
         shutil.rmtree(tmp_dir, ignore_errors=True)
 
