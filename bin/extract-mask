@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# run script in Linux environment
+SOURCE=$(dirname $(dirname "${BASH_SOURCE[0]}"))
+exec bash "$SOURCE/scripts/extract_mask.sh" "$@"
