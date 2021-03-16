@@ -45,6 +45,9 @@ do
     echo "Extracting the mask: $FILE"
     out_name=$(echo "$FILE" | cut -d'.' -f1)
     extension=$(echo "$FILE" | rev | cut -d'.' -f1 | rev)
+    # unset nodata
+    gdal_edit.py "$FILE" -unsetnodata
+
     if [ $extension == "tif" ]; then
         gdal_calc.py -A "$FILE" --type=Byte --co COMPRESS=PACKBITS --calc="0*(A!=0)+1*(A==0)" --outfile="${out_name}"_mask.tif --NoDataValue=0
     else
