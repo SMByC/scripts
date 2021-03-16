@@ -12,11 +12,12 @@
 
 ##### help
 function help(){ cat << END
-usage: extract-mask [-h] FILES
+usage: extract-mask [-h][--inverted] FILES
 
-Extract the mask
+Extract the mask where 0=data 1=mask
 
 arguments:
+    --inverted  create the mask with inverted values, 0=mask 1=data
     FILES  files to process
 
 For more information visit:
@@ -30,6 +31,8 @@ if (( $# < 1 )); then
     exit 1
 fi
 
+REVERSE=false
+
 for arg in "$@"
 do
     if [[ $arg == "-h" ]]
@@ -37,19 +40,32 @@ do
         help
         exit 0
     fi
+    if [[ $arg == "--inverted" ]]
+    then
+        REVERSE=true
+    fi
 done
 #####
 
 for FILE in "$@"
 do
-    echo "Extracting the mask: $FILE"
+    if [[ $FILE == -* ]]; then
+        continue
+    fi
+
+    echo "Extracting mask: $FILE"
     out_name=$(echo "$FILE" | cut -d'.' -f1)
     extension=$(echo "$FILE" | rev | cut -d'.' -f1 | rev)
-    # unset nodata
-    gdal_edit.py "$FILE" -unsetnodata
 
     if [ $extension == "tif" ]; then
-        gdal_calc.py -A "$FILE" --type=Byte --co COMPRESS=PACKBITS --calc="0*(A!=0)+1*(A==0)" --outfile="${out_name}"_mask.tif --NoDataValue=0
+        # unset nodata
+        gdal_edit.py "$FILE" -unsetnodata
+        if [ "$REVERSE" = true ] ; then
+            gdal_calc.py -A "$FILE" --type=Byte --co COMPRESS=PACKBITS --calc="1*(A!=0)+0*(A==0)" --outfile="${out_name}"_mask.tif --NoDataValue=1 --quiet
+        else
+            gdal_calc.py -A "$FILE" --type=Byte --co COMPRESS=PACKBITS --calc="0*(A!=0)+1*(A==0)" --outfile="${out_name}"_mask.tif --NoDataValue=0 --quiet
+        fi
+        echo "   mask file: ${out_name}_mask.tif"
     else
         echo "   this file is not a .tif"
     fi
