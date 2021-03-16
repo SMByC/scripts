@@ -58,13 +58,13 @@ do
     extension=$(echo "$FILE" | rev | cut -d'.' -f1 | rev)
 
     if [ $extension == "tif" ]; then
-        # unset nodata
         gdal_edit.py "$FILE" -unsetnodata
         if [ "$REVERSE" = true ] ; then
-            gdal_calc.py -A "$FILE" --type=Byte --co COMPRESS=PACKBITS --calc="1*(A!=0)+0*(A==0)" --outfile="${out_name}"_mask.tif --NoDataValue=1 --quiet
+            gdal_calc.py -A "$FILE" --type=Byte --co COMPRESS=PACKBITS --calc="1*(A!=0)+0*(A==0)" --outfile="${out_name}"_mask.tif --quiet
         else
-            gdal_calc.py -A "$FILE" --type=Byte --co COMPRESS=PACKBITS --calc="0*(A!=0)+1*(A==0)" --outfile="${out_name}"_mask.tif --NoDataValue=0 --quiet
+            gdal_calc.py -A "$FILE" --type=Byte --co COMPRESS=PACKBITS --calc="0*(A!=0)+1*(A==0)" --outfile="${out_name}"_mask.tif --quiet
         fi
+        gdal_edit.py "${out_name}"_mask.tif -unsetnodata
         echo "   mask file: ${out_name}_mask.tif"
     else
         echo "   this file is not a .tif"
