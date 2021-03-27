@@ -23,7 +23,7 @@ libs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file_
 if libs_dir not in sys.path:
     sys.path.append(libs_dir)
 
-import gdal_merge, gdal_calc
+import gdal_merge
 from fmask import fmask, landsatTOA, landsatangles, config, saturationcheck
 from rios import fileinfo
 
@@ -89,13 +89,13 @@ def script():
 
         if len(cloud_masking_files) == 1:
             cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
-                   '--calc', '"1*(A==1)+3*(A!=1)"', "--quiet"
+                   '--calc', '"1*(A==1)+3*(A!=1)"', "--quiet",
                    '--outfile', '"{}"'.format(cloud_mask_file),
                    "-A", '"{}"'.format(cloud_masking_files[0])]
 
         if len(cloud_masking_files) == 2:
             cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
-                   '--calc', '"1*logical_and(A==1,B==1)+3*logical_or(A!=1,B!=1)"', "--quiet"
+                   '--calc', '"1*logical_and(A==1,B==1)+3*logical_or(A!=1,B!=1)"', "--quiet",
                    '--outfile', '"{}"'.format(cloud_mask_file),
                    "-A", '"{}"'.format(cloud_masking_files[0]),
                    "-B", '"{}"'.format(cloud_masking_files[1])]
@@ -358,8 +358,12 @@ def do_blue_band(mtl_file, blue_band_l457, blue_band_l8, tmp_dir):
 
     ########################################
     # do blue band filter
-    gdal_calc.Calc(calc="1*(A<{threshold})+6*(A>={threshold})".format(threshold=bb_threshold),
-                   A=blue_band_file, outfile=cloud_bb_file, type="Byte", quiet=True)
+    cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
+           '--calc', '"1*(A<{threshold})+6*(A>={threshold})"'.format(threshold=bb_threshold), "--quiet",
+           '--outfile', '"{}"'.format(cloud_bb_file), "--type='Byte'",
+           "-A", '"{}"'.format(blue_band_file)]
+
+    subprocess.run(" ".join(cmd), shell=True)
 
     # save final result of masking
     return cloud_bb_file

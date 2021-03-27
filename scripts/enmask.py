@@ -1,4 +1,6 @@
 import os, sys
+import platform
+import subprocess
 from subprocess import call
 import argparse
 from osgeo import gdal
@@ -9,8 +11,6 @@ gdal.PushErrorHandler('CPLQuietErrorHandler')
 libs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "libs")
 if libs_dir not in sys.path:
     sys.path.append(libs_dir)
-
-import gdal_merge, gdal_calc
 
 
 def script():
@@ -89,8 +89,11 @@ def script():
         call("gdal_merge.py -co BIGTIFF=YES -ot UInt16 -o {} -separate {} {} {} {}".format(tmp_file, *tmp_bands), shell=True)
 
         try:
-            gdal_calc.Calc(calc="A*(B==0)", A=tmp_file, B=mask_file,
-                           outfile=enmask_file, allBands='A', type="UInt16", overwrite=True)
+            cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
+                   '--calc', '"A*(B==0)"', "--quiet",
+                   '--outfile', '"{}"'.format(enmask_file), "--type='UInt16'",
+                   "-A", '"{}"'.format(tmp_file), "-B", '"{}"'.format(mask_file)]
+            subprocess.run(" ".join(cmd), shell=True)
             report += "DONE\n"
         except Exception as e:
             report += "ERROR applying the mask: {}\n".format(e)
