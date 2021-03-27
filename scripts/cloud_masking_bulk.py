@@ -16,7 +16,7 @@ import os, sys
 import argparse
 import platform
 import shutil
-from subprocess import call
+import subprocess
 
 # add project dir to pythonpath
 libs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "libs")
@@ -87,19 +87,24 @@ def script():
 
         cloud_mask_file = mtl_file.split("_MTL.txt")[0] + "_mask.tif"
 
-
         if len(cloud_masking_files) == 1:
-            gdal_calc.Calc(calc="1*(A==1)+3*(A!=1)", outfile=cloud_mask_file,
-                           A=cloud_masking_files[0], quiet=True)
+            cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
+                   '--calc', '"1*(A==1)+3*(A!=1)"',
+                   '--outfile', '"{}"'.format(cloud_mask_file),
+                   "-A", '"{}"'.format(cloud_masking_files[0])]
 
         if len(cloud_masking_files) == 2:
-            gdal_calc.Calc(calc="1*logical_and(A==1,B==1)+3*logical_or(A!=1,B!=1)",
-                           outfile=cloud_mask_file,
-                           A=cloud_masking_files[0], B=cloud_masking_files[1], quiet=True)
+            cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
+                   '--calc', '"1*logical_and(A==1,B==1)+3*logical_or(A!=1,B!=1)"',
+                   '--outfile', '"{}"'.format(cloud_mask_file),
+                   "-A", '"{}"'.format(cloud_masking_files[0]),
+                   "-B", '"{}"'.format(cloud_masking_files[1])]
+
+        subprocess.run(" ".join(cmd), shell=True)
 
         cmd = ['gdal_edit' if platform.system() == 'Windows' else 'gdal_edit.py',
                '"{}"'.format(cloud_mask_file), "-unsetnodata"]
-        call(" ".join(cmd), shell=True)
+        subprocess.run(" ".join(cmd), shell=True)
 
         # copying style
         try:
