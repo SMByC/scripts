@@ -89,13 +89,13 @@ def script():
 
         if len(cloud_masking_files) == 1:
             cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
-                   '--calc', '"1*(A==1)+3*(A!=1)"',
+                   '--calc', '"1*(A==1)+3*(A!=1)"', "--quiet"
                    '--outfile', '"{}"'.format(cloud_mask_file),
                    "-A", '"{}"'.format(cloud_masking_files[0])]
 
         if len(cloud_masking_files) == 2:
             cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
-                   '--calc', '"1*logical_and(A==1,B==1)+3*logical_or(A!=1,B!=1)"',
+                   '--calc', '"1*logical_and(A==1,B==1)+3*logical_or(A!=1,B!=1)"', "--quiet"
                    '--outfile', '"{}"'.format(cloud_mask_file),
                    "-A", '"{}"'.format(cloud_masking_files[0]),
                    "-B", '"{}"'.format(cloud_masking_files[1])]
