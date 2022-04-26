@@ -3,7 +3,6 @@ import os
 import argparse
 import rasterio
 from osgeo import gdal
-from osgeo import osr
 gdal.UseExceptions()
 gdal.PushErrorHandler('CPLQuietErrorHandler')
 
@@ -140,7 +139,7 @@ def script():
             sensor = filename.split("_")[4][1::]
             if not filename.startswith("Landsat_"): raise Exception("No inicia con'Landsat_'")
             if sensor not in ["ETM", "OLI", "TM"]: raise Exception("Nombre de sensor '{}' invalido".format(sensor))
-            if landsat_version not in [5, 7, 8]: raise Exception("Version de landsat '{}' invalido".format(landsat_version))
+            if landsat_version not in [5, 7, 8, 9]: raise Exception("Version de landsat '{}' invalido".format(landsat_version))
             if os.path.basename(os.path.dirname(img_file)) != "{}_{}".format(path, row):
                 raise Exception("Path/row de la imagen '{}' no corresponde a la carpeta superior '{}'"
                                 .format("{}_{}".format(path, row), os.path.basename(os.path.dirname(img_file))))
