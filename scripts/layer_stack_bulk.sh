@@ -24,6 +24,12 @@ https://smbyc.bitbucket.io/scripts/layer_stack/#bulk-for-landsat
 END
 }
 
+if (( $# < 1 )); then
+    echo -e "Error: required arguments, see how to usage:\n"
+    help
+    exit 1
+fi
+
 for arg in "$@"
 do
     if [[ $arg == "-h" ]]
