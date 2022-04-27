@@ -72,8 +72,10 @@ def parse_landsat_ID_oldFilename(landsat_id):
     landsat_id = landsat_id.upper()
     if landsat_id[1] == "E":
         sensor = "ETM"
-    if landsat_id[1] in ["O", "C"]:
+    if landsat_id[1] == "O":
         sensor = "OLI"
+    if landsat_id[1] == "C":
+        sensor = "OT"
     if landsat_id[1] == "T":
         sensor = "TM"
     landsat_version = int(landsat_id[2])
@@ -92,8 +94,10 @@ def parse_landsat_ID_newFilename(landsat_id):
     landsat_id = [i.upper() for i in landsat_id]
     if landsat_id[0][1] == "E":
         sensor = "ETM"
-    if landsat_id[0][1] in ["O", "C"]:
+    if landsat_id[0][1] == "O":
         sensor = "OLI"
+    if landsat_id[0][1] == "C":
+        sensor = "OT"
     if landsat_id[0][1] == "T":
         sensor = "TM"
     landsat_version = int(landsat_id[0][-1])
