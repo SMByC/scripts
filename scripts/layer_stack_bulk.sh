@@ -12,7 +12,7 @@ set -e
 
 ##### help
 function help(){ cat << END
-usage: layer-stack-bulk [-h] [-b=BANDS]
+usage: layer-stack-bulk [-h] [-b=BANDS] DIRS
 
 Make the default (Reflec SR) layer stack for all landsat folders (L*) in current directory
 
@@ -55,22 +55,26 @@ done
 
 echo -e "Bands to process: $BANDS\n"
 
-for dir in `ls -d L*/`
+for DIR in "$@"
 do
+    if [ ! -d "$DIR" ]; then
+        continue
+    fi
+
     echo "Processing: $dir"
     cd $dir
-    name=`ls *sr_band* 2> /dev/null`
+    name=$(ls *sr_band* 2> /dev/null)
     if [ -n "$name" ]
     then
       # landsat 5, 7, 8
-      out_name=`echo $name | cut -d's' -f1`
-      gdal_merge.py -o ../${out_name}Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot Int16 -separate $(eval ls ${out_name}sr_band{$BANDS}.tif)
+      out_name=$(echo "$name" | cut -d's' -f1)
+      gdal_merge.py -o ../"${out_name}"Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot Int16 -separate $(eval ls "${out_name}"sr_band{"$BANDS"}.tif)
       echo -e "  Result saved in: ${out_name}Reflec_SR.tif\n"
     else
       # landsat 9
-      name=`ls *SR_B*`
-      out_name=`echo $name | cut -d'R' -f1| head -c -2`
-      gdal_merge.py -o ../${out_name}Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot Int16 -separate $(eval ls ${out_name}SR_B{$BANDS}.TIF)
+      name=$(ls *SR_B*)
+      out_name=$(echo "$name" | cut -d'R' -f1| head -c -2)
+      gdal_merge.py -o ../"${out_name}"Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot Int16 -separate $(eval ls "${out_name}"SR_B{"$BANDS"}.TIF)
       echo -e "  Result saved in: ${out_name}Reflec_SR.tif\n"
     fi
 
