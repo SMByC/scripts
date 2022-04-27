@@ -67,8 +67,8 @@ do
         continue
     fi
 
-    echo "Processing: $dir"
-    cd $dir
+    echo "Processing: $DIR"
+    cd "$DIR"
     name=$(ls *sr_band* 2> /dev/null)
     if [ -n "$name" ]
     then
