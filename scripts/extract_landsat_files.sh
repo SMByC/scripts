@@ -40,12 +40,21 @@ do
 done
 #####
 
-function extraction () {
+function extraction_tar_gz () {
     if [ -d "$2" ]; then
         echo "   the dir: $2 already exists, no extract!"
     else
         mkdir $2
         tar -zxf $1 -C $2 > /dev/null 2>&1
+    fi
+}
+
+function extraction_tar () {
+    if [ -d "$2" ]; then
+        echo "   the dir: $2 already exists, no extract!"
+    else
+        mkdir $2
+        tar -xf $1 -C $2 > /dev/null 2>&1
     fi
 }
 
@@ -57,9 +66,11 @@ do
     out_name=`echo $FILE | cut -d'.' -f1`
     extension=`echo $FILE | cut -d'.' -f2-3`
     if [ $extension == "tar.gz" ]; then
-        extraction $FILE $out_name
+        extraction_tar_gz $FILE $out_name
+    elif [ $extension == "tar" ]; then
+        extraction_tar $FILE $out_name
     else
-        echo "   this file is not a .tar.gz"
+        echo "   the file: $FILE is not a tar.gz or tar file, no extract!"
     fi
 done
 
