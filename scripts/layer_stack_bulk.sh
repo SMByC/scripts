@@ -74,14 +74,25 @@ do
     then
       # landsat 5, 7, 8
       out_name=$(echo $name | cut -d's' -f1)
-      gdal_merge.py -o ../${out_name}Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot Int16 -separate $(eval ls ${out_name}sr_band{$BANDS}.tif)
+      extension=$(echo $name | tail -c 4)
+      gdal_merge.py -o ../${out_name}Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot Int16 -separate $(eval ls ${out_name}sr_band{$BANDS}.${extension})
       echo -e "  Result saved in: ${out_name}Reflec_SR.tif\n"
     else
       # landsat 9
       name=$(ls *SR_B*)
-      out_name=$(echo $name | cut -d'R' -f1| head -c -2)
-      gdal_merge.py -o ../${out_name}Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot Int16 -separate $(eval ls ${out_name}SR_B{$BANDS}.TIF)
-      echo -e "  Result saved in: ${out_name}Reflec_SR.tif\n"
+      if [ -n "$name" ]
+      then
+        out_name=$(echo $name | cut -d'R' -f1| head -c -2)
+        extension=$(echo $name | tail -c 4)
+        gdal_merge.py -o ../${out_name}Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot Int16 -separate $(eval ls ${out_name}SR_B{$BANDS}.${extension})
+        echo -e "  Result saved in: ${out_name}Reflec_SR.tif\n"
+      else
+        name=$(ls *_B*)
+        out_name=$(echo $name | cut -d'B' -f1| head -c -1)
+        extension=$(echo $name | tail -c 4)
+        gdal_merge.py -o ../${out_name}Reflec_SR.tif -of GTiff -co BIGTIFF=YES -ot Int16 -separate $(eval ls ${out_name}B{$BANDS}.${extension})
+        echo -e "  Result saved in: ${out_name}Crudas.tif\n"
+      fi
     fi
 
     cd ..
