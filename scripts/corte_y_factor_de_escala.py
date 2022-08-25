@@ -26,7 +26,7 @@ def script():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('inputs', type=str, help='directories and/or files', nargs='*')
-    parser.add_argument('--apply-factor', action='store_true', help='overwrite existing files', default=False)
+    parser.add_argument('--apply-factor', action='store_true', help='apply the factor for Landsat Collection 2', default=False)
     parser.add_argument('--cut-area-shapefile', type=str, help='shapefile path for cut the area', default=None)
 
     args = parser.parse_args()
@@ -66,8 +66,8 @@ def script():
             cut_area_file = glob.glob(os.path.join(path_to_cut_file, "*.shp"))
             if cut_area_file:
                 if len(cut_area_file) > 1:
-                    cut_area_file = [f for f in cut_area_file if f.endswith("Z18N.shp")][0]
-                    if not cut_area_file:
+                    cut_area_shapefile = [f for f in cut_area_file if f.endswith("Z18N.shp")][0]
+                    if not cut_area_shapefile:
                         print("\tERROR: No se pudo definir cual es el archivo del area efectiva en: {}".format(path_to_cut_file))
                         return
                 else:
