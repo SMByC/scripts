@@ -31,6 +31,11 @@ def script():
 
     args = parser.parse_args()
 
+    if args.apply_factor:
+        print("Scale factor for collection 2: ENABLED")
+    else:
+        print("Scale factor for collection 2: DISABLED")
+
     # search all Image files in inputs recursively if the files are in directories
     img_files = []
     for _input in args.inputs:
@@ -101,6 +106,7 @@ def script():
         # remove temporary file
         if args.apply_factor:
             os.remove(tmp_file)
+    print("\nDONE")
 
 if __name__ == '__main__':
     script()
