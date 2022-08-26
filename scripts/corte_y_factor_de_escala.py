@@ -32,9 +32,9 @@ def script():
     args = parser.parse_args()
 
     if args.apply_factor:
-        print("Scale factor for collection 2: ENABLED")
+        print("\nApply scale factor for collection 2: ENABLED")
     else:
-        print("Scale factor for collection 2: DISABLED")
+        print("\nApply scale factor for collection 2: DISABLED")
 
     # search all Image files in inputs recursively if the files are in directories
     img_files = []
@@ -102,6 +102,8 @@ def script():
         avg_ds = None
         if os.path.isfile(avg_clip_file):
             os.remove(avg_clip_file)
+        if os.path.isfile(avg_clip_file + ".aux.xml"):
+            os.remove(avg_clip_file + ".aux.xml")
 
         if args.apply_factor:
             tmp_file = os.path.join(os.path.dirname(img_file), out_dir, "{random}.tif".format(random=os.urandom(4).hex()))
