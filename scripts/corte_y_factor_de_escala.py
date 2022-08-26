@@ -86,9 +86,22 @@ def script():
             print("\tERROR: No se encontro el shapefile para el area efectiva: {}".format(cut_area_shapefile))
             return
 
-        # get shapefile extent
-        with fiona.open(cut_area_shapefile, "r") as source:
-            cut_area_extent = source.bounds
+        # clip avg image with cut area shapefile
+        avg_image = "/home/data/ref_images/av2575_utmz18_relfectancia.img"
+        avg_clip_file = os.path.join(os.path.dirname(img_file), out_dir, "{random}.tif".format(random=os.urandom(4).hex()))
+        gdal.Warp(avg_clip_file, avg_image, cutlineDSName=cut_area_shapefile)
+
+        # get avg image extent
+        avg_ds = gdal.Open(avg_clip_file)
+        geoTransform = avg_ds.GetGeoTransform()
+        minx = geoTransform[0]
+        maxy = geoTransform[3]
+        maxx = minx + geoTransform[1] * avg_ds.RasterXSize
+        miny = maxy + geoTransform[5] * avg_ds.RasterYSize
+        avg_clip_extent = [minx, miny, maxx, maxy]
+        avg_ds = None
+        if os.path.isfile(avg_clip_file):
+            os.remove(avg_clip_file)
 
         if args.apply_factor:
             tmp_file = os.path.join(os.path.dirname(img_file), out_dir, "{random}.tif".format(random=os.urandom(4).hex()))
@@ -100,7 +113,7 @@ def script():
             img_file = tmp_file
 
         gdal.Warp(final_file, img_file, dstSRS='EPSG:32618', xRes=30, yRes=30, cutlineDSName=cut_area_shapefile,
-                  outputBounds=cut_area_extent, resampleAlg=gdal.gdalconst.GRA_NearestNeighbour, multithread=True,
+                  outputBounds=avg_clip_extent, resampleAlg=gdal.gdalconst.GRA_NearestNeighbour, multithread=True,
                   dstNodata=0, outputType=gdal.gdalconst.GDT_UInt16)
 
         # remove temporary file
