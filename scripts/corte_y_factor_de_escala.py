@@ -56,18 +56,13 @@ def script():
     for img_file in img_files:
         print("PROCESSING: " + os.path.basename(img_file))
 
-        parent_dir = os.path.basename(os.path.dirname(img_file))
-        # check parent dir
-        try:
-            int(parent_dir.split("_")[0])
-            int(parent_dir.split("_")[1])
-        except:
-            print("\tERROR: directorio padre debe ser row_path (e.g. '8_58')")
-            return
+        path_row = os.path.basename(img_file).split("_")
+        path_row = path_row[1] + "_" + path_row[2]
+
         final_file = os.path.join(os.path.dirname(img_file), out_dir, os.path.basename(img_file))
 
         if args.cut_area_shapefile is None:
-            path_to_cut_file = os.path.join("/home/smbyc/xtremio/imagenes/Landsat/6.3.Area_Efectiva/", parent_dir)
+            path_to_cut_file = os.path.join("/home/smbyc/xtremio/imagenes/Landsat/6.3.Area_Efectiva/", path_row)
             cut_area_file = glob.glob(os.path.join(path_to_cut_file, "*.shp"))
             if cut_area_file:
                 if len(cut_area_file) > 1:
