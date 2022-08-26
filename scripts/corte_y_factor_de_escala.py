@@ -89,7 +89,7 @@ def script():
         # clip avg image with cut area shapefile
         avg_image = "/home/data/ref_images/av2575_utmz18_relfectancia.img"
         avg_clip_file = os.path.join(os.path.dirname(img_file), out_dir, "{random}.tif".format(random=os.urandom(4).hex()))
-        gdal.Warp(avg_clip_file, avg_image, cutlineDSName=cut_area_shapefile)
+        gdal.Warp(avg_clip_file, avg_image, cutlineDSName=cut_area_shapefile, cropToCutline=True, multithread=True, outputType=gdal.GDT_Byte)
 
         # get avg image extent
         avg_ds = gdal.Open(avg_clip_file)
