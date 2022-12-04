@@ -51,8 +51,9 @@ def script():
         path_row = path_row[1] + "_" + path_row[2]
         path_row_date = "_".join(os.path.basename(target_file).split("_")[0:4])
         mask_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(target_file)))))
-        # first file in dir that start with pattern: "LC08_L1TP_"
-        mask_file = glob.glob(os.path.join(mask_dir, "{}*".format(path_row_date)))[0]
+        # first file in dir that start with pattern
+        mask_file = glob.glob(os.path.join(mask_dir, "6.Procesos_Mosaico_Anual/6.2.Enmascaramiento_Nubes/", path_row,
+                                           "{}*".format(path_row_date)))[0]
 
         final_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(target_file))),
                                  "3.2.2.Reflectancia_SR_Enmascarada", path_row)
