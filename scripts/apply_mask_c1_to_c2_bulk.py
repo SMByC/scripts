@@ -13,7 +13,6 @@ import argparse
 import platform
 import subprocess
 
-import fiona
 from osgeo import gdal
 
 gdal.UseExceptions()
