@@ -82,7 +82,7 @@ def script():
             return
 
         # clip avg image with cut area shapefile
-        avg_image = "/home/data/ref_images/av2575_utmz18_relfectancia.img"
+        avg_image = "/home/smbyc/data/Cristhian/Landsat/AV2575_C2_2000_2021_v1.tif"
         avg_clip_file = os.path.join(os.path.dirname(img_file), out_dir, "{random}.tif".format(random=os.urandom(4).hex()))
         gdal.Warp(avg_clip_file, avg_image, cutlineDSName=cut_area_shapefile, cropToCutline=True, multithread=True, outputType=gdal.GDT_Byte)
 
