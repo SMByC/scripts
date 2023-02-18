@@ -9,7 +9,7 @@ def script():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('inputs', type=str, help='directories and/or files', nargs='*')
-    parser.add_argument('-x', type=float, help='horizontal displacement (+) right (-) left, default: +10.992', default=10.992)
+    parser.add_argument('-x', type=float, help='horizontal displacement (+) east (-) west, default: +10.992', default=10.992)
     parser.add_argument('-y', type=float, help='vertical displacement (+) north (-) south, default: +13.407', default=13.407)
     args = parser.parse_args()
 
