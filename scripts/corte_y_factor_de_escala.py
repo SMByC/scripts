@@ -19,6 +19,30 @@ gdal.UseExceptions()
 gdal.PushErrorHandler('CPLQuietErrorHandler')
 
 
+def check_zero_pixel(img_file):
+    """Convert the pixels in the band if at least there is one pixel in other bands as zero"""
+    ds = gdal.Open(img_file, gdal.GA_Update)
+
+    bands = ds.RasterCount
+    for band in range(1, bands + 1):
+        band_ds = ds.GetRasterBand(band)
+        data = band_ds.ReadAsArray()
+
+        if band == 1:
+            mask = data == 0
+        else:
+            mask = mask | (data == 0)
+
+    # apply mask to all bands
+    for band in range(1, bands + 1):
+        band_ds = ds.GetRasterBand(band)
+        data = band_ds.ReadAsArray()
+        data[mask] = 0
+        band_ds.WriteArray(data)
+
+    ds = None
+
+
 def script():
     """Run as a script with arguments
     """
@@ -100,6 +124,7 @@ def script():
             os.remove(avg_clip_file + ".aux.xml")
 
         if args.apply_factor:
+            print("\tApplying factor to the image")
             tmp_file = os.path.join(os.path.dirname(img_file), out_dir, "{random}.tif".format(random=os.urandom(4).hex()))
             cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
                    '--calc', '"((A*0.0000275)-0.2)*10000"', "--quiet", "--allBands A",
@@ -111,6 +136,10 @@ def script():
         gdal.Warp(final_file, img_file, dstSRS='EPSG:32618', xRes=30, yRes=30, cutlineDSName=cut_area_shapefile,
                   outputBounds=avg_clip_extent, resampleAlg=gdal.gdalconst.GRA_NearestNeighbour, multithread=True,
                   dstNodata=0, outputType=gdal.gdalconst.GDT_UInt16)
+
+        # check if there is zero pixel in the final image
+        print("\tChecking zero pixel in the final image")
+        check_zero_pixel(final_file)
 
         # remove temporary file
         if args.apply_factor:
