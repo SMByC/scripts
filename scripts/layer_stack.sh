@@ -48,7 +48,9 @@ else
     out_name=$(echo $1 | sed 's/.tif/_allbands.tif/g')
 fi
 
-gdal_merge.py -o $out_name -of GTiff -co BIGTIFF=YES -separate $@
+gdalbuildvrt -separate temp.vrt $@
+gdal_translate -of GTiff -co BIGTIFF=YES temp.vrt $out_name
+rm temp.vrt
 
 echo "Result saved in: $out_name"
 echo "DONE"
