@@ -85,7 +85,7 @@ def script():
         final_file = os.path.join(os.path.dirname(img_file), out_dir, os.path.basename(img_file))
 
         if args.cut_area_shapefile is None:
-            path_to_cut_file = os.path.join("/home/smbyc/xtremio/imagenes/Landsat/6.3.Area_Efectiva/", path_row)
+            path_to_cut_file = os.path.join("/home/smbyc/cona2/Imagenes/Landsat/6.3.Area_Efectiva/", path_row)
             cut_area_file = glob.glob(os.path.join(path_to_cut_file, "*.shp"))
             if cut_area_file:
                 if len(cut_area_file) > 1:
@@ -105,7 +105,7 @@ def script():
             return
 
         # clip avg image with cut area shapefile
-        avg_image = "/home/smbyc/data/Cristhian/Landsat/AV2575_C2_2000_2021_v1.tif"
+        avg_image = "/home/smbyc/cona2/Imagenes/Landsat/Average_25_75/AV2575_C2_2000_2021_v1.tif"
         avg_clip_file = os.path.join(os.path.dirname(img_file), out_dir, "{random}.tif".format(random=os.urandom(4).hex()))
         gdal.Warp(avg_clip_file, avg_image, cutlineDSName=cut_area_shapefile, cropToCutline=True, multithread=True, outputType=gdal.GDT_Byte)
 
