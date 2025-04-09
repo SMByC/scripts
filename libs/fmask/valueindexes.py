@@ -19,7 +19,7 @@ from __future__ import print_function, division
 import numpy
 
 # load _valueindexes
-from CloudMasking.libs.fmask import _valueindexes
+from . import _valueindexes
 
 
 class ValueIndexesError(Exception):
