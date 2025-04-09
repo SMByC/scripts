@@ -16,10 +16,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from __future__ import print_function, division
 
+import os
 import numpy
 
-# load _valueindexes
-from . import _valueindexes
+# Fail slightly less drastically when running from ReadTheDocs
+if os.getenv('READTHEDOCS', default='False') != 'True':
+    from . import _valueindexes
 
 
 class ValueIndexesError(Exception):
