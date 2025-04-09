@@ -29,10 +29,10 @@ represent potential shadow objects.
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import numpy
-from scipy.ndimage import grey_erosion, grey_dilation, minimum_filter
+from scipy.ndimage import grey_dilation
 
 # load _fillminima
-from . import _fillminima
+from CloudMasking.libs.fmask import _fillminima
 
 
 def fillMinima(img, nullval, boundaryval):
