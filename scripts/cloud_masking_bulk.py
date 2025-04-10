@@ -156,7 +156,7 @@ def do_fmask(mtl_file, filters_enabled, tmp_dir, min_cloud_size=0, cloud_prob_th
             for N in [1, 2]]
 
     # set bands for reflective and thermal
-    if landsat_version == 8:
+    if landsat_version in [8, 9]:
         # get the reflective file names bands
         reflective_bands = [
             os.path.join(input_dir, mtl_file_parse['FILE_NAME_BAND_' + str(N)])
@@ -225,7 +225,7 @@ def do_fmask(mtl_file, filters_enabled, tmp_dir, min_cloud_size=0, cloud_prob_th
         sensor = config.FMASK_LANDSAT47
     elif landsat_version == 7:
         sensor = config.FMASK_LANDSAT47
-    elif landsat_version == 8:
+    elif landsat_version in [8, 9]:
         sensor = config.FMASK_LANDSAT8
 
     # needed so the saturation function knows which
@@ -266,7 +266,7 @@ def do_fmask(mtl_file, filters_enabled, tmp_dir, min_cloud_size=0, cloud_prob_th
         sensor = config.FMASK_LANDSAT47
     elif landsat_version == 7:
         sensor = config.FMASK_LANDSAT47
-    elif landsat_version == 8:
+    elif landsat_version in [8, 9]:
         sensor = config.FMASK_LANDSAT8
 
     fmaskFilenames = config.FmaskFilenames()
@@ -343,7 +343,7 @@ def do_blue_band(mtl_file, blue_band_l457, blue_band_l8, tmp_dir):
         # get the reflective file names bands
         blue_band_file = os.path.join(input_dir, mtl_file_parse['FILE_NAME_BAND_1'])
         bb_threshold = blue_band_l457
-    if landsat_version in [8]:
+    if landsat_version in [8, 9]:
         # get the reflective file names bands
         blue_band_file = os.path.join(input_dir, mtl_file_parse['FILE_NAME_BAND_2'])
         bb_threshold = blue_band_l8
