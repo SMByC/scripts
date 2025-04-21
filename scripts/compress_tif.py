@@ -2,6 +2,8 @@ import os
 import argparse
 from osgeo import gdal
 
+# Enable GDAL exceptions to suppress FutureWarning
+gdal.UseExceptions()
 
 def compress_geotiff(input_file, output_file):
     """
