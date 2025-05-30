@@ -160,7 +160,7 @@ OUTPUT_DIR="$OUTPUT_BASEDIR/$LAYER_NAME"
 SOURCE_URL="$SOURCE_URL_BASE$LAYER_NAME/{z}/{x}/{-y}.$TILE_FORMAT"
 
 # Create temporary directory for intermediate files
-TEMP_DIR=$(mktemp -d)
+TEMP_DIR=$(mktemp -d -p "/home/smbyc/data-run")
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create temporary directory."
     exit 1
