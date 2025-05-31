@@ -166,6 +166,15 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Create temporary output directory
+TEMP_OUTPUT_DIR="$TEMP_DIR/$LAYER_NAME"
+mkdir -p "$TEMP_OUTPUT_DIR"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to create temporary output directory."
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+
 # Function to clean up temporary files
 cleanup() {
     echo "Cleaning up temporary files..."
@@ -207,15 +216,7 @@ else
   gdal_translate -ot Byte -scale "$INPUT_FILE" "$TEMP_TIF"
 fi
 
-# Create output directory if it doesn't exist
-if [ ! -d "$OUTPUT_DIR" ]; then
-  echo "Creating output directory: $OUTPUT_DIR"
-  mkdir -p "$OUTPUT_DIR"
-  if [ $? -ne 0 ]; then
-    echo "Error: Failed to create output directory."
-    cleanup 1
-  fi
-fi
+# No need to create output directory yet, will create it before moving files
 
 # Set up tile format options
 TILE_OPTIONS=""
@@ -252,7 +253,7 @@ GDAL2TILES_CMD="gdal2tiles.py \
   -t \"$LAYER_NAME\" \
   -c \"SMByC\" \
   \"$TEMP_TIF\" \
-  \"$OUTPUT_DIR\""
+  \"$TEMP_OUTPUT_DIR\""
 
 # Execute the command
 eval $GDAL2TILES_CMD
@@ -293,7 +294,7 @@ else
   LAYER_ID=$(uuidgen)
 fi
 
-OUTPUT_QLR_FILE="$OUTPUT_DIR/$(basename "$INPUT_FILE" .tif).qlr"
+OUTPUT_QLR_FILE="$TEMP_OUTPUT_DIR/$(basename "$INPUT_FILE" .tif).qlr"
 
 # Create the QLR content
 cat > "$OUTPUT_QLR_FILE" << EOF
@@ -408,13 +409,46 @@ else
 fi
 
 # Write the SOURCE_URL to xyz_url.txt file
-OUTPUT_URL_FILE="$OUTPUT_DIR/xyz_url.txt"
+OUTPUT_URL_FILE="$TEMP_OUTPUT_DIR/xyz_url.txt"
 echo "$SOURCE_URL" > "$OUTPUT_URL_FILE"
 if [ ! -f "$OUTPUT_URL_FILE" ]; then
   echo "Warning: Failed to create xyz_url.txt file."
 else
   echo "XYZ URL file created: $OUTPUT_URL_FILE"
 fi
+
+# Move files from temporary directory to final destination
+echo "Moving files from temporary directory to final destination..."
+
+# Create output directory if it doesn't exist
+if [ ! -d "$OUTPUT_DIR" ]; then
+  echo "Creating output directory: $OUTPUT_DIR"
+  mkdir -p "$OUTPUT_DIR"
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to create output directory."
+    cleanup 1
+  fi
+fi
+
+# Use rsync to move files (preserves permissions and is more reliable than mv)
+if command -v rsync &> /dev/null; then
+  rsync -a "$TEMP_OUTPUT_DIR/" "$OUTPUT_DIR/"
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to move files to output directory."
+    cleanup 1
+  fi
+else
+  # Fallback to cp if rsync is not available
+  cp -a "$TEMP_OUTPUT_DIR"/* "$OUTPUT_DIR/"
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to move files to output directory."
+    cleanup 1
+  fi
+fi
+
+# Update file paths for summary
+OUTPUT_QLR_FILE="$OUTPUT_DIR/$(basename "$INPUT_FILE" .tif).qlr"
+OUTPUT_URL_FILE="$OUTPUT_DIR/xyz_url.txt"
 
 # Clean up temporary files
 cleanup 0
@@ -429,4 +463,5 @@ echo "Zoom levels: $MIN_ZOOM to $MAX_ZOOM"
 echo "URL for QGIS: $SOURCE_URL"
 echo
 echo "To use in QGIS, open the .qlr file: $OUTPUT_QLR_FILE"
+echo "XYZ URL is available in: $OUTPUT_URL_FILE"
 echo "Done! Tiles are available in: $OUTPUT_DIR"
