@@ -13,7 +13,7 @@ show_usage() {
     echo "  -x, --max-zoom LEVEL       Set maximum zoom level (default: 16)"
     echo "  -u, --url-base URL         Set base URL for tiles (default: file:///Z:/WMTS/)"
     echo "  -f, --format FORMAT        Set tile format (webp, png, jpeg) (default: webp)"
-    echo "  -q, --quality VALUE        Set quality for lossy formats (0-100) (default: 95)"
+    echo "  -q, --quality VALUE        Set quality for lossy formats (0-100) (default: 85)"
     echo "  -l, --lossless             Use lossless compression for WEBP (default: enabled)"
     echo "  -p, --processes NUM        Number of parallel processes (default: 12)"
     echo "  -r, --resampling METHOD    Resampling method (near, bilinear, cubic, etc.) (default: near)"
@@ -28,9 +28,9 @@ MIN_ZOOM=0
 MAX_ZOOM=16
 SOURCE_URL_BASE="file:///Z:/WMTS/"
 TILE_FORMAT="webp"
-QUALITY=95
+QUALITY=85
 LOSSLESS=true
-PROCESSES=12
+PROCESSES=24
 RESAMPLING="near"
 
 # Parse command line arguments
