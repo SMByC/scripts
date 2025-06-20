@@ -9,29 +9,29 @@ show_usage() {
     echo "Options:"
     echo "  -h, --help                 Show this help message and exit"
     echo "  -o, --output-dir DIR       Set output base directory (default: current directory)"
-    echo "  -n, --min-zoom LEVEL       Set minimum zoom level (default: 0)"
-    echo "  -x, --max-zoom LEVEL       Set maximum zoom level (default: 16)"
+    echo "  -n, --min-zoom LEVEL       Set minimum zoom level (default: 2)"
+    echo "  -x, --max-zoom LEVEL       Set maximum zoom level (default: 15)"
     echo "  -u, --url-base URL         Set base URL for tiles (default: file:///Z:/WMTS/)"
     echo "  -f, --format FORMAT        Set tile format (webp, png, jpeg) (default: webp)"
-    echo "  -q, --quality VALUE        Set quality for lossy formats (0-100) (default: 85)"
-    echo "  -l, --lossless             Use lossless compression for WEBP (default: enabled)"
-    echo "  -p, --processes NUM        Number of parallel processes (default: 12)"
-    echo "  -r, --resampling METHOD    Resampling method (near, bilinear, cubic, etc.) (default: near)"
+    echo "  -q, --quality VALUE        Set quality for lossy formats (0-100) (default: 80)"
+    echo "  -l, --lossless             Use lossless compression for WEBP (default: disabled)"
+    echo "  -p, --processes NUM        Number of parallel processes (default: 30)"
+    echo "  -r, --resampling METHOD    Resampling method (average,near,bilinear,cubic, etc.) (default: bilinear)"
     echo
     echo "Example:"
-    echo "  $0 -o /path/to/output -n 2 -x 15 -f png input.tif"
+    echo "  convert-tif-to-wmts -n 2 -x 16 -p 32 -r near input.tif"
 }
 
 # Default values
 OUTPUT_BASEDIR="/home/smbyc/cona3/WMTS"
-MIN_ZOOM=0
-MAX_ZOOM=16
+MIN_ZOOM=2
+MAX_ZOOM=15
 SOURCE_URL_BASE="file:///Z:/WMTS/"
 TILE_FORMAT="webp"
-QUALITY=85
-LOSSLESS=true
-PROCESSES=24
-RESAMPLING="near"
+QUALITY=80
+LOSSLESS=false
+PROCESSES=30
+RESAMPLING="bilinear"
 
 # Parse command line arguments
 POSITIONAL_ARGS=()
