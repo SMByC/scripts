@@ -2,16 +2,16 @@
 
 # Function to display usage information
 show_usage() {
-    echo "Usage: $0 [OPTIONS] input.tif"
+    echo "Usage: convert-tif-to-wmts [OPTIONS] input.tif"
     echo
     echo "Convert a GeoTIFF file to Web Map Tile Service (WMTS) format."
     echo
     echo "Options:"
     echo "  -h, --help                 Show this help message and exit"
-    echo "  -o, --output-dir DIR       Set output base directory (default: current directory)"
+    echo "  -o, --output-dir DIR       Set output base directory (default: cona3/WMTS/)"
     echo "  -n, --min-zoom LEVEL       Set minimum zoom level (default: 2)"
     echo "  -x, --max-zoom LEVEL       Set maximum zoom level (default: 15)"
-    echo "  -u, --url-base URL         Set base URL for tiles (default: file:///Z:/WMTS/)"
+    echo "  -u, --url-base URL         Set base URL for tiles (default: file:///Z:/WMTS)"
     echo "  -f, --format FORMAT        Set tile format (webp, png, jpeg) (default: webp)"
     echo "  -q, --quality VALUE        Set quality for lossy formats (0-100) (default: 80)"
     echo "  -l, --lossless             Use lossless compression for WEBP (default: disabled)"
@@ -26,7 +26,7 @@ show_usage() {
 OUTPUT_BASEDIR="/home/smbyc/cona3/WMTS"
 MIN_ZOOM=2
 MAX_ZOOM=15
-SOURCE_URL_BASE="file:///Z:/WMTS/"
+SOURCE_URL_BASE="file:///Z:/WMTS"
 TILE_FORMAT="webp"
 QUALITY=80
 LOSSLESS=false
@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
             exit 0
             ;;
         -o|--output-dir)
-            OUTPUT_BASEDIR="$2"
+            OUTPUT_BASEDIR="$(readlink -f "$2")"
             shift 2
             ;;
         -n|--min-zoom)
@@ -156,8 +156,15 @@ fi
 LAYER_NAME=$(basename "$INPUT_FILE" .tif)
 OUTPUT_DIR="$OUTPUT_BASEDIR/$LAYER_NAME"
 
+# check if "/home/smbyc/cona3/WMTS" is present in the OUTPUT_BASEDIR
+if [[ "$OUTPUT_BASEDIR" != /home/smbyc/cona3/WMTS* ]]; then
+    echo "Error: OUTPUT_BASEDIR must start with /home/smbyc/cona3/WMTS/"
+    exit 1
+fi
+EXTRA_OUTPUT_PATH="${OUTPUT_BASEDIR#/home/smbyc/cona3/WMTS}"
+
 # Set up source URL
-SOURCE_URL="$SOURCE_URL_BASE$LAYER_NAME/{z}/{x}/{-y}.$TILE_FORMAT"
+SOURCE_URL="${SOURCE_URL_BASE}${EXTRA_OUTPUT_PATH}/${LAYER_NAME}/{z}/{x}/{-y}.$TILE_FORMAT"
 
 # Create temporary directory for intermediate files
 TEMP_DIR=$(mktemp -d -p "/home/smbyc/data-run")
