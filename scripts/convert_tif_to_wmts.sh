@@ -114,8 +114,8 @@ if [ ! -r "$INPUT_FILE" ]; then
 fi
 
 # Check if output directory is writable
-if [ ! -w "$(dirname "$OUTPUT_BASEDIR")" ]; then
-    echo "Error: Output directory '$(dirname "$OUTPUT_BASEDIR")' is not writable."
+if [ ! -w "$OUTPUT_BASEDIR" ]; then
+    echo "Error: Output directory '$OUTPUT_BASEDIR' is not writable."
     exit 1
 fi
 
