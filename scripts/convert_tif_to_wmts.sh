@@ -159,7 +159,7 @@ OUTPUT_DIR="$OUTPUT_BASEDIR/$LAYER_NAME"
 
 # check if "/home/smbyc/cona3/WMTS" is present in the OUTPUT_BASEDIR
 if [[ "$OUTPUT_BASEDIR" != /home/smbyc/cona3/WMTS* ]]; then
-    echo "Error: OUTPUT_BASEDIR must start with /home/smbyc/cona3/WMTS"
+    echo "Error: output directory must start with /home/smbyc/cona3/WMTS"
     exit 1
 fi
 EXTRA_OUTPUT_PATH="${OUTPUT_BASEDIR#/home/smbyc/cona3/WMTS}"
