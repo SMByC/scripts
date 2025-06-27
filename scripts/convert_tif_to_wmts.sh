@@ -8,7 +8,7 @@ show_usage() {
     echo
     echo "Options:"
     echo "  -h, --help                 Show this help message and exit"
-    echo "  -o, --output-dir DIR       Set output base directory (default: cona3/WMTS/)"
+    echo "  -o, --output-dir DIR       Set output base directory (default: /home/smbyc/cona3/WMTS)"
     echo "  -n, --min-zoom LEVEL       Set minimum zoom level (default: 2)"
     echo "  -x, --max-zoom LEVEL       Set maximum zoom level (default: 15)"
     echo "  -u, --url-base URL         Set base URL for tiles (default: file:///Z:/WMTS)"
@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
             exit 0
             ;;
         -o|--output-dir)
-            OUTPUT_BASEDIR="$(readlink -f "$2")"
+            OUTPUT_BASEDIR="$2"
             shift 2
             ;;
         -n|--min-zoom)
@@ -113,11 +113,11 @@ if [ ! -r "$INPUT_FILE" ]; then
     exit 1
 fi
 
-# Check if output directory is writable
-if [ ! -w "$OUTPUT_BASEDIR" ]; then
-    echo "Error: Output directory '$OUTPUT_BASEDIR' is not writable."
-    exit 1
-fi
+## Check if output directory is writable
+#if [ ! -w "$OUTPUT_BASEDIR" ]; then
+#    echo "Error: Output directory '$OUTPUT_BASEDIR' is not writable."
+#    exit 1
+#fi
 
 # Validate zoom levels
 if ! [[ "$MIN_ZOOM" =~ ^[0-9]+$ ]] || ! [[ "$MAX_ZOOM" =~ ^[0-9]+$ ]]; then
@@ -154,11 +154,12 @@ fi
 
 # Set up layer name and output directory
 LAYER_NAME=$(basename "$INPUT_FILE" .tif)
+OUTPUT_BASEDIR="${OUTPUT_BASEDIR%/}"  # Remove trailing slash if present
 OUTPUT_DIR="$OUTPUT_BASEDIR/$LAYER_NAME"
 
 # check if "/home/smbyc/cona3/WMTS" is present in the OUTPUT_BASEDIR
 if [[ "$OUTPUT_BASEDIR" != /home/smbyc/cona3/WMTS* ]]; then
-    echo "Error: OUTPUT_BASEDIR must start with /home/smbyc/cona3/WMTS/"
+    echo "Error: OUTPUT_BASEDIR must start with /home/smbyc/cona3/WMTS"
     exit 1
 fi
 EXTRA_OUTPUT_PATH="${OUTPUT_BASEDIR#/home/smbyc/cona3/WMTS}"
