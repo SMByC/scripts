@@ -9,13 +9,13 @@ show_usage() {
     echo "Options:"
     echo "  -h, --help                 Show this help message and exit"
     echo "  -o, --output-dir DIR       Set output base directory (default: /home/smbyc/cona3/WMTS)"
-    echo "  -n, --min-zoom LEVEL       Set minimum zoom level (default: 2)"
-    echo "  -x, --max-zoom LEVEL       Set maximum zoom level (default: 15)"
+    echo "  -n, --min-zoom LEVEL       Set minimum zoom level (default: 0)"
+    echo "  -x, --max-zoom LEVEL       Set maximum zoom level (default: 16)"
     echo "  -u, --url-base URL         Set base URL for tiles (default: file:///Z:/WMTS)"
     echo "  -f, --format FORMAT        Set tile format (webp, png, jpeg) (default: webp)"
     echo "  -q, --quality VALUE        Set quality for lossy formats (0-100) (default: 80)"
     echo "  -l, --lossless             Use lossless compression for WEBP (default: disabled)"
-    echo "  -p, --processes NUM        Number of parallel processes (default: 30)"
+    echo "  -p, --processes NUM        Number of parallel processes (default: 62)"
     echo "  -r, --resampling METHOD    Resampling method (average,near,bilinear,cubic, etc.) (default: bilinear)"
     echo
     echo "Example:"
@@ -24,13 +24,13 @@ show_usage() {
 
 # Default values
 OUTPUT_BASEDIR="/home/smbyc/cona3/WMTS"
-MIN_ZOOM=2
-MAX_ZOOM=15
+MIN_ZOOM=0
+MAX_ZOOM=16
 SOURCE_URL_BASE="file:///Z:/WMTS"
 TILE_FORMAT="webp"
 QUALITY=80
 LOSSLESS=false
-PROCESSES=30
+PROCESSES=62
 RESAMPLING="bilinear"
 
 # Parse command line arguments
@@ -440,7 +440,7 @@ fi
 
 # Use rsync to move files (preserves permissions and is more reliable than mv)
 if command -v rsync &> /dev/null; then
-  rsync -a "$TEMP_OUTPUT_DIR/" "$OUTPUT_DIR/"
+  rsync -a --inplace "$TEMP_OUTPUT_DIR/" "$OUTPUT_DIR/"
   if [ $? -ne 0 ]; then
     echo "Error: Failed to move files to output directory."
     cleanup 1
