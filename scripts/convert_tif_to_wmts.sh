@@ -13,10 +13,10 @@ show_usage() {
     echo "  -x, --max-zoom LEVEL       Set maximum zoom level (default: 16)"
     echo "  -u, --url-base URL         Set base URL for tiles (default: file:///Z:/WMTS)"
     echo "  -f, --format FORMAT        Set tile format (webp, png, jpeg) (default: webp)"
-    echo "  -q, --quality VALUE        Set quality for lossy formats (0-100) (default: 80)"
+    echo "  -q, --quality VALUE        Set quality for lossy formats (0-100) (default: 85)"
     echo "  -l, --lossless             Use lossless compression for WEBP (default: disabled)"
     echo "  -p, --processes NUM        Number of parallel processes (default: 62)"
-    echo "  -r, --resampling METHOD    Resampling method (average,near,bilinear,cubic, etc.) (default: bilinear)"
+    echo "  -r, --resampling METHOD    Resampling method (average,near,bilinear,cubic, etc.) (default: near)"
     echo
     echo "Example:"
     echo "  convert-tif-to-wmts -n 2 -x 16 -p 32 -r near input.tif"
@@ -28,10 +28,10 @@ MIN_ZOOM=0
 MAX_ZOOM=16
 SOURCE_URL_BASE="file:///Z:/WMTS"
 TILE_FORMAT="webp"
-QUALITY=80
+QUALITY=85
 LOSSLESS=false
 PROCESSES=62
-RESAMPLING="bilinear"
+RESAMPLING="near"
 
 # Parse command line arguments
 POSITIONAL_ARGS=()

@@ -19,8 +19,6 @@ Convert raw Landsat product (LPGS - level 1) to ESPA (level 2)
 arguments:
     DIRS  directories to process
 
-For more information visit:
-https://smbyc.bitbucket.io/scripts/extract_landsat_files
 END
 }
 
@@ -52,12 +50,12 @@ export GEOTIFF_INC="/usr/include/libgeotiff"
 export GEOTIFF_LIB="/usr/lib64"
 export HDFINC="/usr/include/hdf"
 export HDFLIB="/usr/lib64/hdf"
-export HDFEOS_GCTPINC="/home/smbyc/xtremio/imagenes/Prueba/ESPA/extra_libs/include"
-export HDFEOS_GCTPLIB="/home/smbyc/xtremio/imagenes/Prueba/ESPA/extra_libs/lib"
-export HDFEOS_INC="/home/smbyc/xtremio/imagenes/Prueba/ESPA/extra_libs/hdfeos/include"
-export HDFEOS_LIB="/home/smbyc/xtremio/imagenes/Prueba/ESPA/extra_libs/lib"
-export HDFEOS5_INC="/home/smbyc/xtremio/imagenes/Prueba/ESPA/extra_libs/hdfeos5/include"
-export HDFEOS5_LIB="/home/smbyc/xtremio/imagenes/Prueba/ESPA/extra_libs/lib"
+export HDFEOS_GCTPINC="/home/smbyc/apps/include"
+export HDFEOS_GCTPLIB="/home/smbyc/apps/lib"
+export HDFEOS_INC="/home/smbyc/apps/hdfeos/include"
+export HDFEOS_LIB="/home/smbyc/apps/lib"
+export HDFEOS5_INC="/home/smbyc/apps/hdfeos5/include"
+export HDFEOS5_LIB="/home/smbyc/apps/lib"
 export JPEGINC="/usr/include"
 export JPEGLIB="/usr/lib64"
 export XML2INC="/usr/include/libxml2"
@@ -71,10 +69,10 @@ export ESPALIB="/home/smbyc/xtremio/imagenes/Prueba/ESPA/espa-product-formatter/
 export ESPA_LEVEL2QA_INC="/home/smbyc/xtremio/imagenes/Prueba/ESPA/espa-l2qa-tools/include"
 export ESPA_LEVEL2QA_LIB="/home/smbyc/xtremio/imagenes/Prueba/ESPA/espa-l2qa-tools/lib"
 
-export NCDF4INC="/usr/include"
-export NCDF4LIB="/usr/lib64"
-export HDF5INC="/usr/include"
-export HDF5LIB="/usr/lib64"
+export NCDF4INC="/home/smbyc/apps/include"
+export NCDF4LIB="/home/smbyc/apps/lib"
+export HDF5INC="/home/smbyc/apps/include"
+export HDF5LIB="/home/smbyc/apps/lib"
 export CURLINC="/usr/include"
 export CURLLIB="/usr/lib64"
 export IDNINC="/usr/include"
