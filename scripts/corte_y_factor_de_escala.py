@@ -127,7 +127,8 @@ def script():
             print("\tApplying factor to the image")
             tmp_file = os.path.join(os.path.dirname(img_file), out_dir, "{random}.tif".format(random=os.urandom(4).hex()))
             cmd = ['gdal_calc' if platform.system() == 'Windows' else 'gdal_calc.py', '--overwrite',
-                   '--calc', '"((A*0.0000275)-0.2)*10000"', "--quiet", "--allBands A",
+                   '--calc', '"((A*0.0000275)-0.2)*10000*(A!=0)"', "--quiet", "--allBands A",
+                   '--NoDataValue', '0',
                    '--outfile', '"{}"'.format(tmp_file), '--format', 'GTiff',
                    "-A", '"{}"'.format(img_file)]
             subprocess.run(" ".join(cmd), shell=True)
@@ -135,11 +136,17 @@ def script():
 
         gdal.Warp(final_file, img_file, dstSRS='EPSG:32618', xRes=30, yRes=30, cutlineDSName=cut_area_shapefile,
                   outputBounds=avg_clip_extent, resampleAlg=gdal.gdalconst.GRA_NearestNeighbour, multithread=True,
-                  dstNodata=0, outputType=gdal.gdalconst.GDT_UInt16)
+                  srcNodata=0, dstNodata=0, outputType=gdal.gdalconst.GDT_UInt16)
 
         # check if there is zero pixel in the final image
         print("\tChecking zero pixel in the final image")
         check_zero_pixel(final_file)
+
+        # remove nodata metadata: pixel values stay 0 outside clip area, but no nodata is declared
+        ds = gdal.Open(final_file, gdal.GA_Update)
+        for band_idx in range(1, ds.RasterCount + 1):
+            ds.GetRasterBand(band_idx).DeleteNoDataValue()
+        ds = None
 
         # remove temporary file
         if args.apply_factor:
